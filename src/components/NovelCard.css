@@ -1,0 +1,597 @@
+.novel-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  cursor: default;
+}
+
+.novel-card:hover {
+  box-shadow: var(--shadow-lg);
+  cursor: default;
+}
+
+.novel-cover {
+  width: 100%;
+  aspect-ratio: 3/4;
+  max-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  cursor: default;
+}
+
+.novel-cover-title {
+  color: var(--color-white);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  padding: var(--spacing-sm);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.novel-content {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: default;
+}
+
+.novel-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-800);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.novel-author {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  margin-bottom: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.novel-status {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  margin-bottom: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.status-reading {
+  background-color: var(--color-reading);
+}
+
+.status-read {
+  background-color: var(--color-read);
+}
+
+.status-want {
+  background-color: var(--color-want);
+}
+
+.card-view-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.novel-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.novel-status-row .novel-status {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  margin-bottom: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.novel-status-row .novel-reading-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.novel-status-row .novel-reading-date.empty {
+  visibility: hidden;
+}
+
+
+.card-view-content .novel-rating {
+  margin-bottom: 2px;
+}
+
+.novel-rating {
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.star {
+  font-size: 14px;
+  margin-right: 2px;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  display: inline-block;
+  transition: transform 0.1s ease;
+}
+
+.star.filled {
+  filter: drop-shadow(0 1px 2px rgba(255, 184, 0, 0.3));
+}
+
+.novel-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: var(--color-gray-100);
+  border-radius: var(--border-radius-full);
+  font-size: 10px;
+  color: var(--color-gray-600);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 编辑按钮 */
+.edit-buttons {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.edit-confirm-btn,
+.edit-cancel-btn {
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.edit-confirm-btn {
+  background-color: #1F2937;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.edit-confirm-btn:hover {
+  background-color: #111827;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.edit-cancel-btn {
+  background-color: #FFFFFF;
+  color: #1F2937;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.edit-cancel-btn:hover {
+  background-color: #F9FAFB;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* 编辑字段 */
+.edit-field {
+  margin-bottom: var(--spacing-xs);
+  cursor: default;
+}
+
+.edit-field label {
+  display: block;
+  font-size: 10px;
+  color: var(--color-gray-600);
+  margin-bottom: 2px;
+  cursor: default;
+}
+
+.edit-field input,
+.edit-field select {
+  width: 100%;
+  padding: 2px var(--spacing-xs);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  cursor: text;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+  outline: none;
+  border-color: var(--color-gray-400);
+}
+
+.rating-input {
+  display: flex;
+  gap: 2px;
+}
+
+.rating-input-compact .star {
+  font-size: 14px !important;
+}
+
+.rating-input .star {
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.1s ease;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  display: inline-block;
+}
+
+.rating-input .star:hover {
+  transform: scale(1.2);
+}
+
+/* 标签编辑 */
+.tags-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: default;
+}
+
+.tags-edit .tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  cursor: default;
+}
+
+.tags-edit .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  background-color: var(--color-gray-100);
+  border-radius: var(--border-radius-full);
+  font-size: 9px;
+  color: var(--color-gray-600);
+  cursor: default;
+}
+
+.tags-edit .tag span {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-gray-400);
+  transition: color 0.2s ease;
+}
+
+.tags-edit .tag span:hover {
+  color: var(--color-gray-600);
+}
+
+.tags-edit input {
+  width: 100%;
+  padding: 2px var(--spacing-xs);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family);
+  cursor: text;
+}
+
+.tags-edit input:focus {
+  outline: none;
+  border-color: var(--color-gray-400);
+}
+
+/* 右键菜单 */
+.context-menu {
+  position: fixed;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  min-width: 120px;
+  padding: var(--spacing-xs) 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item svg {
+  flex-shrink: 0;
+}
+
+.menu-item:hover {
+  background-color: var(--color-gray-50);
+}
+
+.menu-item.danger {
+  color: var(--color-danger);
+}
+
+.menu-item.danger:hover {
+  background-color: #FEE2E2;
+}
+
+/* 颜色选择器子菜单 */
+.color-picker-submenu {
+  border-top: 1px solid var(--color-gray-200);
+  background-color: var(--color-gray-50);
+}
+
+.color-picker-submenu .color-picker-title {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.color-picker-submenu .color-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-md) var(--spacing-sm);
+}
+
+.color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+  border-color: var(--color-gray-400);
+}
+
+/* 列表视图样式 */
+.novel-list-item {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: var(--spacing-2xl);
+  padding: 2px var(--spacing-md);
+  margin-bottom: 4px;
+  transition: box-shadow 0.2s ease;
+  width: 100%;
+  align-items: center;
+  cursor: default;
+}
+
+.novel-list-item:hover {
+  box-shadow: var(--shadow-md);
+  cursor: default;
+}
+
+.novel-list-item .novel-cover {
+  width: 90px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: var(--border-radius-sm);
+  max-height: none;
+  aspect-ratio: auto;
+  align-self: center;
+}
+
+.novel-list-item .novel-cover-title {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  line-height: 1.3;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.novel-list-item .novel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.list-view-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.novel-list-item .content-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.novel-list-item .content-separator {
+  color: var(--color-gray-300);
+  flex-shrink: 0;
+  font-size: var(--font-size-sm);
+  margin: 0 var(--spacing-xs);
+}
+
+.novel-list-item .novel-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+.novel-list-item .novel-author {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+.novel-list-item .novel-status {
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+  margin-right: var(--spacing-md);
+}
+
+.novel-list-item .novel-rating {
+  flex-shrink: 0;
+  margin-right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  height: 16px;
+  padding-top: 2px;
+}
+
+.novel-list-item .novel-rating .star {
+  font-size: 14px;
+}
+
+.novel-list-item .novel-reading-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: var(--spacing-md);
+}
+
+.novel-list-item .novel-reading-date.empty {
+  display: none;
+}
+
+.novel-list-item .novel-tags {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  flex-shrink: 1;
+  gap: 4px;
+}
+
+.novel-list-item .tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+.novel-list-item .novel-details-preview {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.novel-list-item .novel-cover-title {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  line-height: 1.3;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.novel-details-preview {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.novel-list-item .edit-buttons {
+  position: static;
+  transform: none;
+  margin-top: var(--spacing-xs);
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+.novel-list-item .edit-confirm-btn,
+.novel-list-item .edit-cancel-btn {
+  padding: 2px var(--spacing-xs);
+  font-size: 9px;
+}
+
+.novel-list-item .rating-input .star {
+  font-size: 14px !important;
+}

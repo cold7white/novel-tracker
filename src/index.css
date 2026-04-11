@@ -1,0 +1,193 @@
+/* CSS 变量定义 */
+:root {
+  /* 主色调 - 黑白灰 */
+  --color-white: #FFFFFF;
+  --color-gray-50: #F9FAFB;   /* 最浅灰 - 背景 */
+  --color-gray-100: #F3F4F6;  /* 浅灰 - 卡片背景 */
+  --color-gray-200: #E5E7EB;  /* 边框颜色 */
+  --color-gray-300: #D1D5DB;  /* 禁用状态 */
+  --color-gray-400: #9CA3AF;  /* 辅助文字 */
+  --color-gray-500: #6B7280;  /* 次要文字 */
+  --color-gray-600: #4B5563;  /* 主要文字 */
+  --color-gray-700: #374151;  /* 标题文字 */
+  --color-gray-800: #1F2937;  /* 强调文字 */
+  --color-gray-900: #111827;  /* 最深文字 */
+  --color-black: #000000;
+
+  /* 状态颜色 */
+  --color-reading: #3B82F6;   /* 在读 - 蓝色 */
+  --color-read: #10B981;      /* 已读 - 绿色 */
+  --color-want: #F59E0B;      /* 想看 - 橙色 */
+
+  /* 红色系 */
+  --color-red-50: #FEF2F2;
+  --color-red-100: #FEE2E2;
+  --color-red-600: #DC2626;
+
+  /* 交互颜色 */
+  --color-primary: #2563EB;   /* 主要按钮 - 蓝色 */
+  --color-danger: #EF4444;    /* 删除/警告 - 红色 */
+  --color-success: #10B981;   /* 成功提示 - 绿色 */
+  --color-warning: #F59E0B;   /* 警告提示 - 橙色 */
+
+  /* 字体家族 */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+                 'Microsoft YaHei', sans-serif;
+
+  /* 字体大小 */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+
+  /* 字重 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+
+  /* 圆角 */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 全局重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-700);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 按钮样式 */
+.btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  background-color: #1D4ED8;
+}
+
+.btn-secondary {
+  background-color: var(--color-white);
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-gray-50);
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  color: var(--color-white);
+}
+
+.btn-danger:hover {
+  background-color: #DC2626;
+}
+
+/* 输入框样式 */
+input, textarea, select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  transition: border-color 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* 状态指示器 */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-reading {
+  background-color: var(--color-reading);
+}
+
+.status-read {
+  background-color: var(--color-read);
+}
+
+.status-want {
+  background-color: var(--color-want);
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: var(--color-gray-100);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.tag-add {
+  border: 1px dashed var(--color-gray-300);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* 响应式设计基础 */
+@media (max-width: 768px) {
+  :root {
+    --font-size-base: 14px;
+  }
+}
