@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './DatePicker.css';
 
 interface DatePickerProps {
@@ -11,6 +11,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = 
   const [showPicker, setShowPicker] = useState(false);
   const [view, setView] = useState<'calendar' | 'months' | 'years'>('calendar');
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const selectedDate = value ? new Date(value + 'T00:00:00') : null;
 
@@ -128,18 +131,53 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = 
     });
   };
 
+  const handleTogglePicker = () => {
+    if (!showPicker && inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setPickerPosition({
+        top: rect.bottom + 4,
+        left: rect.left
+      });
+    }
+    setShowPicker(!showPicker);
+  };
+
+  // 点击外部关闭日期选择器
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showPicker &&
+        inputRef.current &&
+        popupRef.current &&
+        !inputRef.current.contains(event.target as Node) &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setShowPicker(false);
+      }
+    };
+
+    if (showPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPicker]);
+
   return (
     <div className="date-picker-container">
       <input
+        ref={inputRef}
         type="text"
         value={value || ''}
         readOnly
         placeholder={placeholder}
         className="date-picker-input"
-        onClick={() => setShowPicker(!showPicker)}
+        onClick={handleTogglePicker}
       />
       {showPicker && (
-        <div className="date-picker-popup">
+        <div ref={popupRef} className="date-picker-popup" style={{ top: `${pickerPosition.top}px`, left: `${pickerPosition.left}px` }}>
           <div className="date-picker-header">
             <button
               type="button"

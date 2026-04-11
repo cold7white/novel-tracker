@@ -63,6 +63,61 @@
   overflow-y: auto;
 }
 
+.stats-btn-inline {
+  width: 50%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+  justify-content: flex-start;
+}
+
+.stats-btn-inline:hover {
+  background-color: var(--color-gray-700);
+}
+
+.stats-btn-inline svg {
+  flex-shrink: 0;
+}
+
+.sidebar-stats {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.stats-btn {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: transparent;
+  border: none;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  transition: color 0.2s ease;
+  justify-content: flex-start;
+}
+
+.stats-btn:hover {
+  color: var(--color-gray-800);
+}
+
+.stats-btn svg {
+  flex-shrink: 0;
+}
+
 .category-item .count {
   font-size: var(--font-size-sm);
   padding: 4px 8px;

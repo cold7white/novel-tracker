@@ -190,21 +190,23 @@
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: var(--spacing-sm);
   align-items: center;
 }
 
 .edit-confirm-btn,
 .edit-cancel-btn {
-  padding: 2px var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  font-size: 10px;
+  padding: 10px var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-size: 16px;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
 }
 
 .edit-confirm-btn {
@@ -581,15 +583,16 @@
   position: static;
   transform: none;
   margin-top: var(--spacing-xs);
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
 }
 
 .novel-list-item .edit-confirm-btn,
 .novel-list-item .edit-cancel-btn {
-  padding: 2px var(--spacing-xs);
-  font-size: 9px;
+  padding: 8px var(--spacing-md);
+  font-size: 14px;
+  min-width: 80px;
 }
 
 .novel-list-item .rating-input .star {

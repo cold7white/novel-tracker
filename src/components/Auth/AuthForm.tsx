@@ -5,10 +5,11 @@ import './AuthForm.css'
 interface AuthFormProps {
   mode: 'login' | 'register'
   onToggleMode: () => void
+  onClose: () => void
   onSuccess?: () => void
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode, onSuccess }) => {
+const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode, onClose, onSuccess }) => {
   const { signIn, signUp } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -35,11 +36,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode, onSuccess }) =>
   }
 
   return (
-    <div className="auth-overlay" onClick={onToggleMode}>
+    <div className="auth-overlay" onClick={onClose}>
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
         <div className="auth-header">
           <h2>{mode === 'login' ? '登录' : '注册'}</h2>
-          <button className="close-btn" onClick={onToggleMode}>×</button>
+          <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">

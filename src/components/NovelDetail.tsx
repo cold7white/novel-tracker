@@ -90,7 +90,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onBack }) => {
             </div>
             {novel.readingDate && (
               <div className="meta-row">
-                <span className="meta-label">阅读时间:</span>
+                <span className="meta-label">日期:</span>
                 <span>{novel.readingDate}</span>
               </div>
             )}

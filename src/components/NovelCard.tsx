@@ -180,9 +180,6 @@ const NovelCard: React.FC<NovelCardProps> = ({
             <div className="edit-confirm-btn" onClick={(e) => { e.stopPropagation(); handleSaveEdit(); }}>
               确定
             </div>
-            <div className="edit-cancel-btn" onClick={(e) => { e.stopPropagation(); handleCancelEdit(); }}>
-              取消
-            </div>
           </div>
         )}
       </div>
