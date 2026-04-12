@@ -11,7 +11,7 @@ interface NovelCardProps {
   onDelete: (id: string) => void;
   onColorChange: (id: string, color: string) => void;
   onViewDetail: (novel: Novel) => void;
-  onInlineEditSave?: (novel: Novel) => void;
+  onInlineEditSave?: (id: string, updates: Partial<Novel>) => void;
 }
 
 const NovelCard: React.FC<NovelCardProps> = ({
@@ -73,8 +73,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
 
   const handleSaveEdit = () => {
     if (editTitle.trim()) {
-      const updatedNovel = {
-        ...novel,
+      const updates = {
         title: editTitle.trim(),
         author: editAuthor.trim(),
         status: editStatus,
@@ -84,9 +83,9 @@ const NovelCard: React.FC<NovelCardProps> = ({
       };
 
       if (onInlineEditSave) {
-        onInlineEditSave(updatedNovel);
+        onInlineEditSave(novel.id, updates);
       } else {
-        onEdit(updatedNovel);
+        onEdit({ ...novel, ...updates });
       }
     }
     setIsEditing(false);

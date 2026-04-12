@@ -113,8 +113,12 @@ function AppContent() {
   }
 
   // 处理内联编辑保存
-  const handleInlineEditSave = (novel: any) => {
-    updateNovel(novel.id, novel)
+  const handleInlineEditSave = (id: string, updates: any) => {
+    updateNovel(id, updates)
+    // 同时更新 viewingNovel 状态，确保详情页显示最新数据
+    if (viewingNovel && viewingNovel.id === id) {
+      setViewingNovel({ ...viewingNovel, ...updates })
+    }
   }
 
   // 处理保存小说
