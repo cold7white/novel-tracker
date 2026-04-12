@@ -61,6 +61,9 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
     const timeCounts = new Map<string, number>();
     const now = new Date();
 
+    // 只统计有阅读时间的小说
+    const novelsWithReadingDate = novels.filter(novel => novel.readingDate);
+
     if (trendPeriod === 'year') {
       // 近20年
       for (let i = 19; i >= 0; i--) {
@@ -68,11 +71,13 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
         const yearKey = `${year}`;
         timeCounts.set(yearKey, 0);
       }
-      novels.forEach(novel => {
-        const date = new Date(novel.createdAt);
-        const yearKey = `${date.getFullYear()}`;
-        if (timeCounts.has(yearKey)) {
-          timeCounts.set(yearKey, (timeCounts.get(yearKey) || 0) + 1);
+      novelsWithReadingDate.forEach(novel => {
+        if (novel.readingDate) {
+          const date = new Date(novel.readingDate);
+          const yearKey = `${date.getFullYear()}`;
+          if (timeCounts.has(yearKey)) {
+            timeCounts.set(yearKey, (timeCounts.get(yearKey) || 0) + 1);
+          }
         }
       });
     } else if (trendPeriod === 'month') {
@@ -82,11 +87,13 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         timeCounts.set(monthKey, 0);
       }
-      novels.forEach(novel => {
-        const date = new Date(novel.createdAt);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        if (timeCounts.has(monthKey)) {
-          timeCounts.set(monthKey, (timeCounts.get(monthKey) || 0) + 1);
+      novelsWithReadingDate.forEach(novel => {
+        if (novel.readingDate) {
+          const date = new Date(novel.readingDate);
+          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          if (timeCounts.has(monthKey)) {
+            timeCounts.set(monthKey, (timeCounts.get(monthKey) || 0) + 1);
+          }
         }
       });
     } else {
@@ -96,11 +103,13 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
         const dayKey = `${date.getMonth() + 1}/${date.getDate()}`;
         timeCounts.set(dayKey, 0);
       }
-      novels.forEach(novel => {
-        const date = new Date(novel.createdAt);
-        const dayKey = `${date.getMonth() + 1}/${date.getDate()}`;
-        if (timeCounts.has(dayKey)) {
-          timeCounts.set(dayKey, (timeCounts.get(dayKey) || 0) + 1);
+      novelsWithReadingDate.forEach(novel => {
+        if (novel.readingDate) {
+          const date = new Date(novel.readingDate);
+          const dayKey = `${date.getMonth() + 1}/${date.getDate()}`;
+          if (timeCounts.has(dayKey)) {
+            timeCounts.set(dayKey, (timeCounts.get(dayKey) || 0) + 1);
+          }
         }
       });
     }
