@@ -1,6 +1,6 @@
 // 生成唯一ID
 export const generateId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };
 
 // 格式化日期
@@ -14,14 +14,15 @@ export const formatDate = (date: Date): string => {
   });
 };
 
-// 颜色预设
+// 颜色预设 - Aurora Borealis 调色板
 export const COVER_COLORS = [
-  '#6B7280',  // 默认灰色
-  '#EF4444',  // 红色
-  '#F59E0B',  // 橙色
-  '#10B981',  // 绿色
-  '#3B82F6',  // 蓝色
-  '#8B5CF6',  // 紫色
-  '#EC4899',  // 粉色
-  '#14B8A6'   // 青色
+  '#9CA3AF',  // 默认浅灰色
+  '#00A896',  // 青绿色
+  '#02C39A',  // 绿松石色
+  '#F0F3BD',  // 淡黄色
+  '#FFD166',  // 金黄色
+  '#EF476F',  // 玫瑰红色
+  '#073B4C',  // 深青色
+  '#118AB2',  // 天蓝色
+  '#7CDEDC'   // 淡青色
 ];

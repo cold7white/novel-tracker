@@ -26,7 +26,7 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [readingDate, setReadingDate] = useState('');
-  const [coverColor, setCoverColor] = useState('#6B7280');
+  const [coverColor, setCoverColor] = useState('#9CA3AF');
 
   useEffect(() => {
     if (novel) {
