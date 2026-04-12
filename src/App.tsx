@@ -252,7 +252,7 @@ function AppContent() {
       {/* 侧边栏 */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h2>小说记录器</h2>
+          <h2>Novel Tracker</h2>
           {/* 认证按钮 - 放在侧边栏右上角 */}
           {isConfigured && (
             <div className="sidebar-auth">
@@ -273,6 +273,38 @@ function AppContent() {
           )}
         </div>
         <nav className="category-list">
+          {/* 统计按钮 */}
+          <div className="category-item-wrapper">
+            <button
+              className="stats-btn-inline"
+              onClick={() => {
+                const total = novels.length
+                const reading = novels.filter(n => n.status === 'reading').length
+                const read = novels.filter(n => n.status === 'read').length
+                const want = novels.filter(n => n.status === 'want').length
+                alert(`统计信息：\n总计：${total} 本\n在读：${reading} 本\n已读：${read} 本\n想看：${want} 本`)
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+              </svg>
+              统计
+            </button>
+          </div>
+          {/* 默认分类 */}
+          {categories.filter(c => c.id === 'default').map(category => (
+            <div key={category.id} className="category-item-wrapper">
+              <div
+                className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+              >
+                <span className="category-name">{category.name}</span>
+                <span className="count">
+                  {novels.filter(n => n.categoryId === 'default' || n.categoryId === null || n.categoryId === undefined).length}
+                </span>
+              </div>
+            </div>
+          ))}
           {categories.filter(c => c.id !== 'default').map(category => (
             <div key={category.id} className="category-item-wrapper">
               <div
@@ -287,10 +319,7 @@ function AppContent() {
               >
                 <span className="category-name">{category.name}</span>
                 <span className="count">
-                  {category.id === 'default'
-                    ? novels.filter(n => n.categoryId === 'default' || n.categoryId === null || n.categoryId === undefined).length
-                    : novels.filter(n => n.categoryId === category.id).length
-                  }
+                  {novels.filter(n => n.categoryId === category.id).length}
                 </span>
               </div>
               {categoryMenu?.id === category.id && (
@@ -327,38 +356,6 @@ function AppContent() {
               )}
             </div>
           ))}
-          {/* 统计按钮 - 在默认分类之前 */}
-          <div className="category-item-wrapper">
-            <button
-              className="stats-btn-inline"
-              onClick={() => {
-                const total = novels.length
-                const reading = novels.filter(n => n.status === 'reading').length
-                const read = novels.filter(n => n.status === 'read').length
-                const want = novels.filter(n => n.status === 'want').length
-                alert(`统计信息：\n总计：${total} 本\n在读：${reading} 本\n已读：${read} 本\n想看：${want} 本`)
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-              </svg>
-              统计
-            </button>
-          </div>
-          {/* 默认分类 */}
-          {categories.filter(c => c.id === 'default').map(category => (
-            <div key={category.id} className="category-item-wrapper">
-              <div
-                className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
-              >
-                <span className="category-name">{category.name}</span>
-                <span className="count">
-                  {novels.filter(n => n.categoryId === 'default' || n.categoryId === null || n.categoryId === undefined).length}
-                </span>
-              </div>
-            </div>
-          ))}
         </nav>
         {!showAddCategory ? (
           <button className="add-category-btn" onClick={() => setShowAddCategory(true)}>
@@ -378,7 +375,10 @@ function AppContent() {
                 setShowAddCategory(false)
                 setNewCategoryName('')
               }}>取消</button>
-              <button className="btn btn-primary" onClick={handleAddCategory}>添加</button>
+              <button className="btn btn-primary" onClick={(e) => {
+                e.stopPropagation()
+                handleAddCategory()
+              }}>添加</button>
             </div>
           </div>
         )}

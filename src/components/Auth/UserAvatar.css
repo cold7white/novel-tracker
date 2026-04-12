@@ -28,8 +28,7 @@
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  width: 50%;
-  min-width: 80px;
+  width: 80px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-md);
