@@ -35,6 +35,9 @@ const NovelCard: React.FC<NovelCardProps> = ({
   const [tagInput, setTagInput] = useState('');
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
+  // 长按状态
+  const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
+
   // 点击外部关闭菜单
   useEffect(() => {
     const handleClickOutside = () => {
@@ -50,6 +53,15 @@ const NovelCard: React.FC<NovelCardProps> = ({
     }
   }, [showMenu]);
 
+  // 清理长按计时器
+  useEffect(() => {
+    return () => {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+      }
+    };
+  }, [longPressTimer]);
+
   const handleContextMenu = (e: React.MouseEvent) => {
     if (isEditing) return;
     e.preventDefault();
@@ -57,6 +69,39 @@ const NovelCard: React.FC<NovelCardProps> = ({
     setMenuPosition({ x: e.clientX, y: e.clientY });
     setShowMenu(true);
     setShowColorPicker(false);
+  };
+
+  // 长按开始
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isEditing) return;
+    const timer = setTimeout(() => {
+      // 触觉反馈（如果支持）
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      // 显示菜单
+      const touch = e.touches[0];
+      setMenuPosition({ x: touch.clientX, y: touch.clientY });
+      setShowMenu(true);
+      setShowColorPicker(false);
+    }, 500); // 500ms 长按
+    setLongPressTimer(timer);
+  };
+
+  // 长按结束
+  const handleTouchEnd = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+  };
+
+  // 长按移动取消
+  const handleTouchMove = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
   };
 
   const handleColorChange = (color: string) => {
@@ -159,6 +204,9 @@ const NovelCard: React.FC<NovelCardProps> = ({
         style={{ backgroundColor: novel.coverColor }}
         onClick={handleCoverClick}
         onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchMove}
       >
         {!isEditing && (
           <div className="novel-cover-title">{novel.title}</div>

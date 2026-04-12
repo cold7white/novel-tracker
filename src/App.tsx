@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import './App.css'
 import { NovelProvider, useNovels } from './contexts/NovelContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -47,6 +47,9 @@ function AppContent() {
   const [isAddingCategory, setIsAddingCategory] = useState(false)
   const addingCategoryRef = useRef<string | null>(null)
 
+  // 分类长按状态
+  const [categoryLongPressTimer, setCategoryLongPressTimer] = useState<number | null>(null)
+
   // 模态框状态
   const [showForm, setShowForm] = useState(false)
   const [editingNovel, setEditingNovel] = useState<any>(null)
@@ -55,6 +58,15 @@ function AppContent() {
 
   // 移动端侧边栏状态
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // 清理长按计时器
+  useEffect(() => {
+    return () => {
+      if (categoryLongPressTimer) {
+        clearTimeout(categoryLongPressTimer)
+      }
+    }
+  }, [categoryLongPressTimer])
 
   // 处理排序
   const handleSort = (field: 'createdAt' | 'title' | 'rating') => {
@@ -187,6 +199,35 @@ function AppContent() {
       }
     }
     setCategoryMenu(null)
+  }
+
+  // 分类长按处理
+  const handleCategoryTouchStart = (e: React.TouchEvent, categoryId: string) => {
+    if (categoryId === 'default') return
+    const timer = setTimeout(() => {
+      // 触觉反馈
+      if (navigator.vibrate) {
+        navigator.vibrate(50)
+      }
+      // 显示菜单
+      const touch = e.touches[0]
+      setCategoryMenu({ id: categoryId, x: touch.clientX, y: touch.clientY })
+    }, 500)
+    setCategoryLongPressTimer(timer)
+  }
+
+  const handleCategoryTouchEnd = () => {
+    if (categoryLongPressTimer) {
+      clearTimeout(categoryLongPressTimer)
+      setCategoryLongPressTimer(null)
+    }
+  }
+
+  const handleCategoryTouchMove = () => {
+    if (categoryLongPressTimer) {
+      clearTimeout(categoryLongPressTimer)
+      setCategoryLongPressTimer(null)
+    }
   }
 
   // 筛选和排序后的小说列表
@@ -343,6 +384,9 @@ function AppContent() {
                     setCategoryMenu({ id: category.id, x: e.clientX, y: e.clientY })
                   }
                 }}
+                onTouchStart={(e) => handleCategoryTouchStart(e, category.id)}
+                onTouchEnd={handleCategoryTouchEnd}
+                onTouchMove={handleCategoryTouchMove}
               >
                 <span className="category-name">{category.name}</span>
                 <span className="count">
