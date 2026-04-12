@@ -562,6 +562,24 @@
   }
 }
 
+/* 移动端竖屏优化 */
+@media (max-width: 768px) and (orientation: portrait) {
+  .novel-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  .novel-list {
+    padding: var(--spacing-md);
+  }
+}
+
+/* 移动端横屏保持 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .novel-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .app {
     grid-template-columns: 1fr;
@@ -591,11 +609,30 @@
     display: flex;
   }
 
+  /* 紧凑按钮样式 */
+  .btn {
+    padding: var(--spacing-compact-sm) var(--spacing-compact-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: var(--spacing-compact-xs);
+  }
+
+  .btn-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Header优化 */
   .header {
     flex-direction: row;
     height: auto;
-    padding: var(--spacing-md);
-    gap: var(--spacing-sm);
+    min-height: auto;
+    padding: var(--spacing-compact-md);
+    gap: var(--spacing-compact-sm);
     align-items: center;
   }
 
@@ -604,10 +641,16 @@
     width: auto;
     justify-content: flex-end;
     margin-left: auto;
+    gap: var(--spacing-compact-sm);
+  }
+
+  .search-input {
+    padding: var(--spacing-compact-sm) var(--spacing-compact-md);
+    font-size: var(--font-size-sm);
+    width: 140px;
   }
 
   .novel-grid {
     padding: var(--spacing-md);
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }

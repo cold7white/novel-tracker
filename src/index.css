@@ -189,5 +189,11 @@ input:focus, textarea:focus, select:focus {
 @media (max-width: 768px) {
   :root {
     --font-size-base: 14px;
+
+    /* 紧凑间距变量 */
+    --spacing-compact-xs: 2px;
+    --spacing-compact-sm: 4px;
+    --spacing-compact-md: 6px;
+    --spacing-compact-lg: 8px;
   }
 }

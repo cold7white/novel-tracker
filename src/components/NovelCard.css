@@ -598,3 +598,48 @@
 .novel-list-item .rating-input .star {
   font-size: 14px !important;
 }
+
+/* 移动端卡片优化 */
+@media (max-width: 768px) and (orientation: portrait) {
+  .novel-cover {
+    max-height: 160px;
+  }
+
+  .novel-content {
+    padding: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .novel-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .novel-author {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* 移动端列表项优化 */
+@media (max-width: 768px) {
+  .novel-list-item {
+    gap: var(--spacing-sm);
+    padding: 2px var(--spacing-sm);
+  }
+
+  .novel-list-item .novel-cover {
+    width: 70px;
+    height: 100px;
+  }
+
+  .novel-list-item .novel-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .novel-list-item .novel-author {
+    font-size: var(--font-size-xs);
+  }
+
+  .novel-list-item .novel-cover-title {
+    font-size: var(--font-size-xs);
+    padding: 2px;
+  }
+}
