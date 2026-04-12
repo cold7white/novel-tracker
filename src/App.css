@@ -18,27 +18,47 @@
   border-right: 1px solid var(--color-gray-200);
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-xl);
+  padding: 20px var(--spacing-xl) 4px var(--spacing-xl);
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar-header {
-  margin-bottom: var(--spacing-xl);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+  height: auto;
+  min-height: 50px;
 }
 
-.sidebar-header h2 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+.sidebar-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  margin: 0;
+}
+
+.sidebar-title .title-small,
+.sidebar-title .title-large {
+  font-size: 32px;
+  font-weight: var(--font-weight-bold);
   color: var(--color-gray-800);
   font-family: var(--font-family);
-  margin: 0 0 var(--spacing-lg);
+  letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .sidebar-auth {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
+  padding: 2px 0 4px 0;
+  min-height: 50px;
+  justify-content: flex-start;
 }
 
 .login-btn {
@@ -52,6 +72,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: var(--font-family);
+  white-space: nowrap;
 }
 
 .login-btn:hover {
@@ -61,6 +82,7 @@
 .category-list {
   flex: 1;
   overflow-y: auto;
+  padding-bottom: var(--spacing-lg);
 }
 
 .stats-btn-inline {
@@ -88,12 +110,6 @@
 
 .stats-btn-inline svg {
   flex-shrink: 0;
-}
-
-.sidebar-stats {
-  margin-top: var(--spacing-md);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--color-gray-200);
 }
 
 .stats-btn {

@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import './App.css'
 import { NovelProvider, useNovels } from './contexts/NovelContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import NovelCard from './components/NovelCard'
 import NovelForm from './components/NovelForm'
 import NovelDetail from './components/NovelDetail'
+import StatsDashboard from './components/StatsDashboard'
 import AuthForm from './components/Auth/AuthForm'
 import UserAvatar from './components/Auth/UserAvatar'
 import type { ReadingStatus } from './types/novel'
@@ -43,11 +44,14 @@ function AppContent() {
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
   const [categoryMenu, setCategoryMenu] = useState<{ id: string; x: number; y: number } | null>(null)
+  const [isAddingCategory, setIsAddingCategory] = useState(false)
+  const addingCategoryRef = useRef<string | null>(null)
 
   // 模态框状态
   const [showForm, setShowForm] = useState(false)
   const [editingNovel, setEditingNovel] = useState<any>(null)
   const [viewingNovel, setViewingNovel] = useState<any>(null)
+  const [showStats, setShowStats] = useState(false)
 
   // 处理排序
   const handleSort = (field: 'createdAt' | 'title' | 'rating') => {
@@ -144,11 +148,18 @@ function AppContent() {
   }
 
   // 添加分类
-  const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      addCategory(newCategoryName.trim())
+  const handleAddCategory = async () => {
+    const trimmedName = newCategoryName.trim()
+    if (trimmedName && !isAddingCategory && addingCategoryRef.current !== trimmedName) {
+      setIsAddingCategory(true)
+      addingCategoryRef.current = trimmedName
+      await addCategory(trimmedName)
       setNewCategoryName('')
       setShowAddCategory(false)
+      setTimeout(() => {
+        setIsAddingCategory(false)
+        addingCategoryRef.current = null
+      }, 1000)
     }
   }
 
@@ -252,7 +263,10 @@ function AppContent() {
       {/* 侧边栏 */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h2>Novel Tracker</h2>
+          <div className="sidebar-title">
+            <span className="title-large">Novel</span>
+            <span className="title-small">tracker</span>
+          </div>
           {/* 认证按钮 - 放在侧边栏右上角 */}
           {isConfigured && (
             <div className="sidebar-auth">
@@ -277,13 +291,7 @@ function AppContent() {
           <div className="category-item-wrapper">
             <button
               className="stats-btn-inline"
-              onClick={() => {
-                const total = novels.length
-                const reading = novels.filter(n => n.status === 'reading').length
-                const read = novels.filter(n => n.status === 'read').length
-                const want = novels.filter(n => n.status === 'want').length
-                alert(`统计信息：\n总计：${total} 本\n在读：${reading} 本\n已读：${read} 本\n想看：${want} 本`)
-              }}
+              onClick={() => setShowStats(true)}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
@@ -371,14 +379,15 @@ function AppContent() {
               autoFocus
             />
             <div className="form-buttons">
-              <button className="btn btn-secondary" onClick={() => {
+              <button className="btn btn-secondary" onClick={(e) => {
+                e.stopPropagation()
                 setShowAddCategory(false)
                 setNewCategoryName('')
               }}>取消</button>
               <button className="btn btn-primary" onClick={(e) => {
                 e.stopPropagation()
                 handleAddCategory()
-              }}>添加</button>
+              }} disabled={isAddingCategory}>{isAddingCategory ? '添加中...' : '添加'}</button>
             </div>
           </div>
         )}
@@ -616,6 +625,7 @@ function AppContent() {
         <NovelDetail
           novel={viewingNovel}
           onSave={handleSaveDetails}
+          onUpdate={handleInlineEditSave}
           onBack={() => setViewingNovel(null)}
         />
       )}
@@ -627,6 +637,14 @@ function AppContent() {
           onToggleMode={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
           onClose={() => setShowAuth(false)}
           onSuccess={() => setShowAuth(false)}
+        />
+      )}
+
+      {/* 统计页面 */}
+      {showStats && (
+        <StatsDashboard
+          novels={novels}
+          onClose={() => setShowStats(false)}
         />
       )}
     </div>

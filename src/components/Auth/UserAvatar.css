@@ -1,5 +1,6 @@
 .user-avatar-container {
   position: relative;
+  padding: 2px 0 36px 0;
 }
 
 .user-avatar {
@@ -26,7 +27,7 @@
 /* 紧凑型下拉菜单 */
 .user-menu-compact {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% - 36px);
   right: 0;
   width: 80px;
   background: var(--color-bg-secondary);

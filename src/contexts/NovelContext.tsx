@@ -28,6 +28,7 @@ const NovelContext = createContext<NovelContextType | undefined>(undefined);
 export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const syncInProgressRef = useRef(false);
+  const lastSyncedUserRef = useRef<string | null>(null);
   const [novels, setNovels] = useState<Novel[]>(() => {
     const saved = localStorage.getItem('novels');
     return saved ? JSON.parse(saved) : [];
@@ -69,8 +70,16 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       return;
     }
 
+    // 检查是否是同一个用户，避免重复同步
+    const currentUserId = user.id;
+    if (lastSyncedUserRef.current === currentUserId) {
+      console.log('Already synced for this user, skipping...');
+      return;
+    }
+
     console.log('Starting sync from Supabase...');
     syncInProgressRef.current = true;
+    lastSyncedUserRef.current = currentUserId;
     try {
       setSyncing(true);
       const [novelsData, categoriesData] = await Promise.all([
@@ -215,15 +224,21 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
       // 将本地有但 Supabase 没有的分类上传到 Supabase
       const supabaseCategoryIds = new Set(categoriesData.map(c => c.id));
-      const localOnlyCategories = mergedCategories.filter(c => c.id !== 'default' && !supabaseCategoryIds.has(c.id));
+      const supabaseCategoryNames = new Set(categoriesData.map(c => c.name.toLowerCase()));
+      const localOnlyCategories = mergedCategories.filter(c =>
+        c.id !== 'default' &&
+        !supabaseCategoryIds.has(c.id) &&
+        !supabaseCategoryNames.has(c.name.toLowerCase())
+      );
       if (localOnlyCategories.length > 0) {
         console.log(`Uploading ${localOnlyCategories.length} local categories to Supabase...`);
         for (const category of localOnlyCategories) {
           try {
-            await categoryQueries.create({
+            const result = await categoryQueries.create({
               user_id: user.id,
               name: category.name,
             });
+            console.log(`Successfully uploaded category "${category.name}" to Supabase with ID:`, result?.id);
           } catch (err) {
             console.error(`Failed to upload category "${category.name}" to Supabase:`, err);
           }
@@ -251,6 +266,8 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       // 清空 localStorage
       localStorage.removeItem('novels');
       localStorage.removeItem('categories');
+      // 重置同步状态
+      lastSyncedUserRef.current = null;
     }
   }, [user]);
 
@@ -335,6 +352,13 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const addCategory = async (name: string) => {
+    // 检查是否已存在相同名称的分类
+    const existingCategory = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+    if (existingCategory) {
+      console.warn('Category with this name already exists:', name);
+      return;
+    }
+
     const category: Category = {
       id: generateId(),
       name,

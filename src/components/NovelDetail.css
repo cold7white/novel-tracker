@@ -35,7 +35,7 @@
 .back-btn {
   background: none;
   border: none;
-  color: var(--color-gray-600);
+  color: #374151;
   cursor: pointer;
   font-size: var(--font-size-lg);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -44,7 +44,12 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+}
+
+.back-btn:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-800);
 }
 
 .back-btn:hover {
@@ -79,7 +84,7 @@
 .detail-info-section {
   display: flex;
   gap: var(--spacing-xl);
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-xl) 40px;
   border-bottom: 1px solid var(--color-gray-200);
   background-color: var(--color-gray-50);
   flex-shrink: 0;
@@ -167,6 +172,149 @@
 
 .no-tags {
   color: var(--color-gray-400);
+}
+
+/* 编辑按钮 */
+.edit-info-btn {
+  background: none;
+  border: 1px solid var(--color-gray-300);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  transition: all 0.2s ease;
+}
+
+.edit-info-btn:hover {
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-400);
+}
+
+.edit-info-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.save-edit-btn {
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: background-color 0.2s ease;
+}
+
+.save-edit-btn:hover {
+  background-color: var(--color-gray-700);
+}
+
+.cancel-edit-btn {
+  background-color: var(--color-white);
+  color: var(--color-gray-600);
+  border: 1px solid var(--color-gray-300);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all 0.2s ease;
+}
+
+.cancel-edit-btn:hover {
+  background-color: var(--color-gray-50);
+}
+
+/* 编辑输入框 */
+.detail-edit-input {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  flex: 1;
+  max-width: 200px;
+}
+
+.detail-edit-input:focus {
+  outline: none;
+  border-color: var(--color-gray-500);
+}
+
+/* 标签编辑 */
+.tags-edit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.editable-tag {
+  position: relative;
+  padding-right: 20px;
+}
+
+.remove-tag-btn {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-gray-500);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-tag-btn:hover {
+  color: var(--color-red-600);
+}
+
+.add-tag-row {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.tag-input {
+  flex: 1;
+  max-width: 150px;
+}
+
+.add-tag-btn {
+  background-color: var(--color-gray-200);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--color-gray-600);
+  transition: all 0.2s ease;
+}
+
+.add-tag-btn:hover {
+  background-color: var(--color-gray-300);
 }
 
 /* 记录区域 */
