@@ -143,7 +143,6 @@
 }
 
 .rating .star {
-  color: var(--color-gray-300);
   font-size: 14px;
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   display: inline-block;
