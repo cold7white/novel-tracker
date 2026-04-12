@@ -46,7 +46,11 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = 
 
   const handleDateClick = (day: number) => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const formattedDate = newDate.toISOString().split('T')[0];
+    // 使用本地时间格式化，避免时区转换导致的日期偏移
+    const year = newDate.getFullYear();
+    const month = String(newDate.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(day).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${dayStr}`;
     onChange(formattedDate);
     setShowPicker(false);
     setView('calendar');
