@@ -26,17 +26,19 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
     setDetails(novel.details);
   }, [novel.details]);
 
-  // 当 novel prop 更新时，同步更新 editedNovel
+  // 当 novel prop 更新时，同步更新 editedNovel（仅在非编辑模式下）
   useEffect(() => {
-    setEditedNovel({
-      title: novel.title,
-      author: novel.author,
-      status: novel.status,
-      rating: novel.rating,
-      tags: [...novel.tags],
-      readingDate: novel.readingDate || ''
-    });
-  }, [novel]);
+    if (!isEditing) {
+      setEditedNovel({
+        title: novel.title,
+        author: novel.author,
+        status: novel.status,
+        rating: novel.rating,
+        tags: [...novel.tags],
+        readingDate: novel.readingDate || ''
+      });
+    }
+  }, [novel, isEditing]);
 
   const handleSave = () => {
     onSave(details);
