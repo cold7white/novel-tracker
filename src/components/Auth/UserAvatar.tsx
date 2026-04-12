@@ -2,11 +2,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import './UserAvatar.css'
 
-interface UserAvatarProps {
-  onClick?: () => void
-}
+interface UserAvatarProps {}
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ onClick }) => {
+const UserAvatar: React.FC<UserAvatarProps> = () => {
   const { user, signOut } = useAuth()
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)

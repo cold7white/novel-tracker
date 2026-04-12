@@ -92,17 +92,6 @@ const NovelCard: React.FC<NovelCardProps> = ({
     setIsEditing(false);
   };
 
-  const handleCancelEdit = () => {
-    setEditTitle(novel.title);
-    setEditAuthor(novel.author);
-    setEditStatus(novel.status);
-    setEditRating(novel.rating);
-    setEditTags(novel.tags);
-    setEditReadingDate(novel.readingDate || '');
-    setTagInput('');
-    setIsEditing(false);
-  };
-
   const addTag = () => {
     if (tagInput.trim() && !editTags.includes(tagInput.trim())) {
       setEditTags([...editTags, tagInput.trim()]);
