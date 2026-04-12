@@ -53,6 +53,9 @@ function AppContent() {
   const [viewingNovel, setViewingNovel] = useState<any>(null)
   const [showStats, setShowStats] = useState(false)
 
+  // 移动端侧边栏状态
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   // 处理排序
   const handleSort = (field: 'createdAt' | 'title' | 'rating') => {
     if (sortField === field) {
@@ -259,9 +262,21 @@ function AppContent() {
     <div className="app" onClick={() => {
       setActiveDropdown(null)
       setCategoryMenu(null)
+      // 点击内容区关闭移动端侧边栏
+      if (sidebarOpen) {
+        setSidebarOpen(false)
+      }
     }}>
+      {/* 移动端遮罩层 */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* 侧边栏 */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-title">
             <span className="title-large">Novel</span>
@@ -397,6 +412,20 @@ function AppContent() {
       <main className="main-content">
         {/* 顶部工具栏 */}
         <header className="header">
+          {/* 移动端汉堡菜单按钮 */}
+          <button
+            className="hamburger-menu"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              {sidebarOpen ? (
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              ) : (
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+              )}
+            </svg>
+          </button>
+
           <button className="btn btn-primary" onClick={handleAddNovel}>+ 添加小说</button>
           <div className="header-controls">
             {/* 状态筛选 */}

@@ -10,6 +10,38 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  position: relative;
+}
+
+/* 移动端遮罩层 */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* 汉堡菜单按钮 */
+.hamburger-menu {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-menu:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-800);
 }
 
 /* 侧边栏样式 */
@@ -536,20 +568,42 @@
   }
 
   .sidebar {
-    display: none;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100vh;
+    z-index: 1001;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .hamburger-menu {
+    display: flex;
   }
 
   .header {
-    flex-direction: column;
+    flex-direction: row;
     height: auto;
     padding: var(--spacing-md);
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    align-items: center;
   }
 
   .header-controls {
     flex-wrap: wrap;
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-end;
+    margin-left: auto;
   }
 
   .novel-grid {
