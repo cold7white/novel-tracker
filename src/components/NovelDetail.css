@@ -16,6 +16,8 @@
   flex-direction: column;
   height: 100%;
   cursor: default;
+  padding: var(--spacing-lg);
+  box-sizing: border-box;
 }
 
 /* 顶部工具栏 */
@@ -196,6 +198,10 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .detail-content {
+    padding: var(--spacing-md);
+  }
+
   .detail-info-section {
     flex-direction: column;
     align-items: center;
@@ -209,5 +215,9 @@
 
   .detail-meta {
     width: 100%;
+  }
+
+  .detail-editor-section {
+    padding: var(--spacing-md);
   }
 }
