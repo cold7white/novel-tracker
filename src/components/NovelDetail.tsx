@@ -24,6 +24,18 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
 
   useEffect(() => {
     setDetails(novel.details);
+  }, [novel.details]);
+
+  // 当 novel prop 更新时，同步更新 editedNovel
+  useEffect(() => {
+    setEditedNovel({
+      title: novel.title,
+      author: novel.author,
+      status: novel.status,
+      rating: novel.rating,
+      tags: [...novel.tags],
+      readingDate: novel.readingDate || ''
+    });
   }, [novel]);
 
   const handleSave = () => {
@@ -96,7 +108,6 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
         <span
           key={i}
           className={`star ${i <= editedNovel.rating ? 'filled' : ''}`}
-          style={{ cursor: 'pointer' }}
           onClick={() => setEditedNovel({ ...editedNovel, rating: i })}
         >
           ★
@@ -238,7 +249,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
                         type="text"
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
                         placeholder="添加标签"
                         className="detail-edit-input tag-input"
                       />

@@ -139,19 +139,29 @@
 
 .rating {
   display: flex;
-  gap: 4px;
+  gap: 2px;
 }
 
 .rating .star {
   color: var(--color-gray-300);
-  font-size: 18px;
+  font-size: 14px;
   font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   display: inline-block;
+  transition: transform 0.1s ease;
 }
 
 .rating .star.filled {
   color: #FFB800;
   filter: drop-shadow(0 1px 2px rgba(255, 184, 0, 0.3));
+}
+
+/* 编辑模式的星星可以点击 */
+.rating .star[onClick] {
+  cursor: pointer;
+}
+
+.rating .star[onClick]:hover {
+  transform: scale(1.2);
 }
 
 .tags {
