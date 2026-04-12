@@ -16,10 +16,9 @@ export const formatDate = (date: Date): string => {
 
 // 颜色预设 - Aurora Borealis 调色板
 export const COVER_COLORS = [
-  '#9CA3AF',  // 默认浅灰色
+  '#6B7280',  // 默认深灰色
   '#00A896',  // 青绿色
   '#02C39A',  // 绿松石色
-  '#F0F3BD',  // 淡黄色
   '#FFD166',  // 金黄色
   '#EF476F',  // 玫瑰红色
   '#073B4C',  // 深青色

@@ -11,7 +11,7 @@ export interface Novel {
   tags: string[];         // 标签数组 (空数组表示无标签)
   details: string;         // 详情内容 (HTML或纯文本)
   readingDate?: string;    // 阅读日期 (YYYY-MM-DD格式)
-  coverColor: string;      // 封面颜色 (十六进制，默认#9CA3AF)
+  coverColor: string;      // 封面颜色 (十六进制，默认#6B7280)
   createdAt: Date;         // 创建时间
   updatedAt: Date;         // 最后修改时间
   categoryId?: string;     // 所属分类ID (可选)
