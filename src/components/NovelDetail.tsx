@@ -267,7 +267,6 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             placeholder="在这里记录小说内容、人物、评价等..."
-            autoFocus
           />
         </div>
       </div>
