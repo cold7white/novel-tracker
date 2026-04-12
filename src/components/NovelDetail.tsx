@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Novel } from '../types/novel';
 import './NovelDetail.css';
 
@@ -22,13 +22,25 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
   });
   const [newTag, setNewTag] = useState('');
 
+  // 使用 ref 来跟踪组件是否已卸载
+  const isMountedRef = useRef(true);
+
   useEffect(() => {
-    setDetails(novel.details);
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isMountedRef.current) {
+      setDetails(novel.details);
+    }
   }, [novel.details]);
 
-  // 当 novel prop 更新时，同步更新 editedNovel（仅在非编辑模式下）
+  // 当 novel.id 改变时，重置 editedNovel（切换到不同的小说时）
   useEffect(() => {
-    if (!isEditing) {
+    if (isMountedRef.current && !isEditing) {
       setEditedNovel({
         title: novel.title,
         author: novel.author,
@@ -38,7 +50,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onSave, onUpdate, onBa
         readingDate: novel.readingDate || ''
       });
     }
-  }, [novel, isEditing]);
+  }, [novel.id]);
 
   const handleSave = () => {
     onSave(details);
