@@ -61,7 +61,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
   });
 
   // 使用 ref 来保存防抖定时器
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedDetailsRef = useRef<string>('');
 
   // 使用 effect 来加载书摘，避免在渲染期间调用函数

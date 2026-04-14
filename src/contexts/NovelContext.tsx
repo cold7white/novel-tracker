@@ -7,18 +7,6 @@ import { useAuth } from './AuthContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase/client';
 import { novelQueries, categoryQueries } from '../lib/supabase/queries';
 
-// 简单的 debounce 函数
-const debounce = <T extends (...args: any[]) => void>(
-  func: T,
-  delay: number
-): T => {
-  let timeoutId: number;
-  return ((...args: any[]) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  }) as T;
-};
-
 interface NovelContextType {
   novels: Novel[];
   categories: Category[];
