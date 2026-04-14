@@ -360,17 +360,20 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   // 当用户登录状态改变时，同步数据
+  // 用 ref 追踪上一次 user，区分"初始化"和"退出登录"
+  const prevUserRef = useRef<string | null>(null);
   useEffect(() => {
+    const prevUser = prevUserRef.current;
+    prevUserRef.current = user?.id ?? null;
+
     if (user) {
       syncFromSupabase();
-    } else {
-      // 退出登录时清空数据，保留默认分类
+    } else if (prevUser && !user) {
+      // 用户主动退出登录，清空数据
       setNovels([]);
       setCategories([{ id: 'default', name: '默认分类', createdAt: new Date() }]);
-      // 清空 localStorage
       localStorage.removeItem('novels');
       localStorage.removeItem('categories');
-      // 重置同步状态
       lastSyncedUserRef.current = null;
     }
   }, [user]);
