@@ -52,14 +52,25 @@ export const novelQueries = {
 
   // Update novel
   update: async (id: string, updates: NovelUpdate) => {
+    console.log('🔧 [Supabase] Updating novel:', { id, updates })
     const { data, error } = await getSupabase()
       .from('novels')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update(updates)
       .eq('id', id)
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('❌ [Supabase] Update failed:', error)
+      console.error('❌ [Supabase] Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
+      throw error
+    }
+    console.log('✅ [Supabase] Update successful:', data)
     return data
   },
 

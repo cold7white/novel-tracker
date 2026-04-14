@@ -1,20 +1,49 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import type { Novel } from '../types/novel';
+import type { Excerpt } from '../types/excerpt';
 import './StatsDashboard.css';
 
 interface StatsDashboardProps {
   novels: Novel[];
   onClose: () => void;
+  onViewNovel: (novel: Novel) => void;
+  onViewExcerpt: (novel: Novel, excerptId: string) => void;
 }
 
-const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
+const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose, onViewNovel, onViewExcerpt }) => {
   const [trendPeriod, setTrendPeriod] = useState<'year' | 'month' | 'day'>('month');
+  const [chartKey, setChartKey] = useState(0);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [chartWidth, setChartWidth] = useState(1200);
 
-  // 新配色方案
+  // 监听容器宽度变化
+  useEffect(() => {
+    const updateWidth = () => {
+      if (chartContainerRef.current) {
+        const width = chartContainerRef.current.clientWidth;
+        setChartWidth(Math.max(width, 300));
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  // 图表加载后直接定位到最右边
+  useEffect(() => {
+    if (chartContainerRef.current) {
+      const el = chartContainerRef.current;
+      requestAnimationFrame(() => {
+        el.scrollLeft = el.scrollWidth;
+      });
+    }
+  }, [chartWidth, trendPeriod]);
+
+  // 配色方案 - 与 CSS 变量 --color-reading/read/want 统一
   const colors = {
     reading: '#EF476F',
     read: '#00A896',
-    want: '#FFD166',
+    want: '#F59E0B',
     accent: '#02C39A',
     primary: '#118AB2',
     secondary: '#7CDEDC',
@@ -57,11 +86,11 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
-    // 按时间周期统计添加的小说数量
+    // 按时间周期统计添加的书籍数量
     const timeCounts = new Map<string, number>();
     const now = new Date();
 
-    // 只统计有阅读时间的小说
+    // 只统计有阅读时间的书籍
     const novelsWithReadingDate = novels.filter(novel => novel.readingDate);
 
     if (trendPeriod === 'year') {
@@ -84,13 +113,13 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
       // 近12个月
       for (let i = 11; i >= 0; i--) {
         const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const monthKey = `${String(date.getFullYear()).slice(2)}/${String(date.getMonth() + 1).padStart(2, '0')}`;
         timeCounts.set(monthKey, 0);
       }
       novelsWithReadingDate.forEach(novel => {
         if (novel.readingDate) {
           const date = new Date(novel.readingDate);
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          const monthKey = `${String(date.getFullYear()).slice(2)}/${String(date.getMonth() + 1).padStart(2, '0')}`;
           if (timeCounts.has(monthKey)) {
             timeCounts.set(monthKey, (timeCounts.get(monthKey) || 0) + 1);
           }
@@ -136,6 +165,27 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
       ratingDistribution
     };
   }, [novels, trendPeriod]);
+
+  // 最近阅读（按阅读日期排序，取前 5 本）
+  const recentNovels = useMemo(() => {
+    return [...novels]
+      .filter(n => n.readingDate)
+      .sort((a, b) => new Date(b.readingDate!).getTime() - new Date(a.readingDate!).getTime())
+      .slice(0, 5);
+  }, [novels]);
+
+  // 最近书摘（扁平化所有书摘，按创建时间排序取前 5 条）
+  const recentExcerpts = useMemo(() => {
+    const allExcerpts: { excerpt: Excerpt; novel: Novel }[] = [];
+    novels.forEach(novel => {
+      (novel.excerpts || []).forEach(excerpt => {
+        allExcerpts.push({ excerpt, novel });
+      });
+    });
+    return allExcerpts
+      .sort((a, b) => new Date(b.excerpt.createdAt).getTime() - new Date(a.excerpt.createdAt).getTime())
+      .slice(0, 5);
+  }, [novels]);
 
   // 渲染饼图
   const renderPieChart = () => {
@@ -301,10 +351,9 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
   // 渲染折线图
   const renderLineChart = () => {
     const max = Math.max(...stats.timeData.map(d => d[1]), 1);
-    // 固定宽度，无论选择哪个时间周期
-    const containerWidth = 1200;
+    const containerWidth = Math.max(chartWidth, 700);
     const chartHeight = 280;
-    const padding = { top: 30, right: 30, bottom: 30, left: 40 };
+    const padding = { top: 30, right: 30, bottom: 30, left: 10 };
 
     const points = stats.timeData.map(([_, value], index) => {
       const x = padding.left + (index / (stats.timeData.length - 1 || 1)) * (containerWidth - padding.left - padding.right);
@@ -312,81 +361,125 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
       return { x, y, value };
     });
 
-    const pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
-    const areaPath = `M${padding.left},${chartHeight - padding.bottom} L${pointsString} L${containerWidth - padding.right},${chartHeight - padding.bottom} Z`;
+    // 生成贝塞尔曲线路径
+    const linePath = points.map((point, index) => {
+      if (index === 0) return `M ${point.x} ${point.y}`;
 
-    // 数据点
-    const dots = points.map((point, index) => (
-      <g key={index}>
-        <circle cx={point.x} cy={point.y} r="5" fill={colors.primary} stroke="#FFFFFF" strokeWidth="2" />
-        {point.value > 0 && (
-          <text x={point.x} y={point.y - 12} textAnchor="middle" fontSize="12" fill="#374151" fontWeight="600">
-            {point.value}
-          </text>
-        )}
-      </g>
-    ));
+      const prev = points[index - 1];
+      const cpX = (prev.x + point.x) / 2;
 
-    // X轴标签
+      return `C ${cpX} ${prev.y}, ${cpX} ${point.y}, ${point.x} ${point.y}`;
+    }).join(' ');
+
+    // 生成面积填充路径
+    const areaPath = `M${points[0].x},${points[0].y} ${linePath} L${points[points.length - 1].x},${chartHeight - padding.bottom} L${points[0].x},${chartHeight - padding.bottom} Z`;
+
+    // X轴标签 - 移动端旋转显示更多标签，桌面端水平间隔显示
+    const totalLabels = stats.timeData.length;
+    const isMobile = chartWidth < 768;
+    const showAll = isMobile && trendPeriod === 'day';
+    const minSpacing = isMobile ? 25 : 50;
+    const labelFontSize = isMobile ? 11 : 13;
+    const labelRotation = isMobile ? -35 : 0;
+    const maxLabels = showAll ? totalLabels : Math.floor((containerWidth - padding.left - padding.right) / minSpacing);
+    const skipInterval = showAll ? 1 : Math.max(1, Math.ceil(totalLabels / Math.max(maxLabels, 1)));
+
     const labels = stats.timeData.map(([label, _], index) => {
       const x = padding.left + (index / (stats.timeData.length - 1 || 1)) * (containerWidth - padding.left - padding.right);
-      let displayLabel = label;
-      if (trendPeriod === 'year') {
-        displayLabel = label;
-      } else if (trendPeriod === 'month') {
-        // 显示年+月，如"2024-01"
-        displayLabel = label;
-      } else {
-        displayLabel = label;
-      }
+      const y = chartHeight - padding.bottom + 20;
+      // 只显示间隔后的标签，以及第一个和最后一个
+      const shouldShow = index === 0 || index === totalLabels - 1 || index % skipInterval === 0;
+      if (!shouldShow) return null;
       return (
-        <text key={index} x={x} y={chartHeight - padding.bottom + 20} textAnchor="middle" fontSize="11" fill="#6B7280">
-          {displayLabel}
+        <text
+          key={index}
+          x={x}
+          y={y}
+          textAnchor="middle"
+          fontSize={labelFontSize}
+          fill="#6B7280"
+          transform={labelRotation ? `rotate(${labelRotation}, ${x}, ${y})` : undefined}
+        >
+          {label}
         </text>
       );
     });
 
-    // Y轴刻度线
-    const gridLines = [0, 0.25, 0.5, 0.75, 1].map(ratio => {
-      const y = padding.top + (1 - ratio) * (chartHeight - padding.top - padding.bottom);
-      const value = Math.round(ratio * max);
+    // 数据标注 - 显示非零值
+    const dataLabels = points.map((point, index) => {
+      if (point.value === 0) return null;
       return (
-        <g key={ratio}>
-          <line x1={padding.left} y1={y} x2={containerWidth - padding.right} y2={y} stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4 4" />
-          {ratio > 0 && ratio < 1 && (
-            <text x={padding.left - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#9CA3AF">{value}</text>
-          )}
-        </g>
+        <text
+          key={`value-${index}`}
+          x={point.x}
+          y={point.y - 8}
+          textAnchor="middle"
+          fontSize={isMobile ? 9 : 11}
+          fill="#118AB2"
+          fontWeight="500"
+        >
+          {point.value}
+        </text>
       );
     });
 
     return (
-      <svg width={containerWidth} height={chartHeight} viewBox={`0 0 ${containerWidth} ${chartHeight}`}>
-        {/* Y轴刻度线 */}
-        {gridLines}
+      <svg width={containerWidth} height={chartHeight} viewBox={`0 0 ${containerWidth} ${chartHeight}`} className="trend-chart-svg">
+        {/* 桌面端：从左往右绘制动画 */}
+        {!isMobile && (
+          <defs>
+            <clipPath id={`reveal-${chartKey}`}>
+              <rect x="0" y="0" width="0" height={chartHeight}>
+                <animate
+                  attributeName="width"
+                  from="0"
+                  to={containerWidth}
+                  dur="0.8s"
+                  fill="freeze"
+                />
+              </rect>
+            </clipPath>
+          </defs>
+        )}
 
         {/* 面积填充 */}
         <path
           d={areaPath}
           fill={colors.primary}
-          fillOpacity="0.15"
+          fillOpacity="0.1"
+          clipPath={!isMobile ? `url(#reveal-${chartKey})` : undefined}
+          className={isMobile ? 'trend-area-mobile' : undefined}
         />
 
-        {/* 折线 */}
-        <polyline
-          points={pointsString}
+        {/* 平滑曲线 */}
+        <path
+          d={linePath}
           fill="none"
           stroke={colors.primary}
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-        />
-
-        {/* 数据点 */}
-        {dots}
+          pathLength={!isMobile ? "1" : undefined}
+          strokeDasharray={!isMobile ? "1" : undefined}
+          strokeDashoffset={!isMobile ? "1" : undefined}
+          className={isMobile ? 'trend-line-mobile' : undefined}
+        >
+          {!isMobile && (
+            <animate
+              attributeName="stroke-dashoffset"
+              from="1"
+              to="0"
+              dur="0.8s"
+              fill="freeze"
+            />
+          )}
+        </path>
 
         {/* X轴标签 */}
         {labels}
+
+        {/* 数据标注 */}
+        {dataLabels}
       </svg>
     );
   };
@@ -439,26 +532,59 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose }) => {
               <div className="trend-controls">
                 <button
                   className={`trend-btn ${trendPeriod === 'year' ? 'active' : ''}`}
-                  onClick={() => setTrendPeriod('year')}
+                  onClick={() => { setTrendPeriod('year'); setChartKey(k => k + 1); }}
                 >
                   按年
                 </button>
                 <button
                   className={`trend-btn ${trendPeriod === 'month' ? 'active' : ''}`}
-                  onClick={() => setTrendPeriod('month')}
+                  onClick={() => { setTrendPeriod('month'); setChartKey(k => k + 1); }}
                 >
                   按月
                 </button>
                 <button
                   className={`trend-btn ${trendPeriod === 'day' ? 'active' : ''}`}
-                  onClick={() => setTrendPeriod('day')}
+                  onClick={() => { setTrendPeriod('day'); setChartKey(k => k + 1); }}
                 >
                   按日
                 </button>
               </div>
             </div>
-            <div className="line-chart-container">
+            <div className="line-chart-container" key={chartKey} ref={chartContainerRef}>
               {renderLineChart()}
+            </div>
+          </div>
+
+          {/* 最近阅读和最近书摘 */}
+          <div className="recent-section">
+            <div className="recent-books">
+              <h3>最近阅读</h3>
+              <div className="recent-books-list">
+                {recentNovels.length > 0 ? recentNovels.map(novel => (
+                  <div key={novel.id} className="recent-book-item" onClick={() => onViewNovel(novel)}>
+                    <div className="recent-book-cover" style={{
+                      backgroundColor: novel.coverColor,
+                      backgroundImage: novel.coverImage ? `url(${novel.coverImage})` : undefined,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}>
+                      {!novel.coverImage && <span className="cover-initial">{novel.title.charAt(0)}</span>}
+                    </div>
+                    <div className="recent-book-title">{novel.title}</div>
+                  </div>
+                )) : <div className="empty-recent">暂无阅读记录</div>}
+              </div>
+            </div>
+            <div className="recent-excerpts">
+              <h3>最近书摘</h3>
+              <div className="recent-excerpts-list">
+                {recentExcerpts.length > 0 ? recentExcerpts.slice(0, 4).map(({ excerpt, novel }) => (
+                  <div key={excerpt.id} className="recent-excerpt-card" onClick={() => onViewExcerpt(novel, excerpt.id)}>
+                    <div className="excerpt-card-header">《{novel.title}》</div>
+                    <p className="excerpt-card-content">"{excerpt.content}"</p>
+                  </div>
+                )) : <div className="empty-recent">暂无书摘</div>}
+              </div>
             </div>
           </div>
         </div>

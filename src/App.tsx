@@ -8,7 +8,7 @@ import NovelDetail from './components/NovelDetail'
 import StatsDashboard from './components/StatsDashboard'
 import AuthForm from './components/Auth/AuthForm'
 import UserAvatar from './components/Auth/UserAvatar'
-import type { ReadingStatus } from './types/novel'
+import type { ReadingStatus, Novel } from './types/novel'
 
 function AppContent() {
   const { user, isConfigured } = useAuth()
@@ -47,6 +47,10 @@ function AppContent() {
   const [isAddingCategory, setIsAddingCategory] = useState(false)
   const addingCategoryRef = useRef<string | null>(null)
 
+  // 右键菜单管理
+  const [contextMenuNovelId, setContextMenuNovelId] = useState<string | null>(null)
+  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null)
+
   // 分类长按状态
   const [categoryLongPressTimer, setCategoryLongPressTimer] = useState<number | null>(null)
 
@@ -58,6 +62,11 @@ function AppContent() {
 
   // 移动端侧边栏状态
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // 详情页初始标签页和返回状态
+  const [novelDetailInitialTab, setNovelDetailInitialTab] = useState<'notes' | 'excerpts'>('notes')
+  const [returnToStats, setReturnToStats] = useState(false)
+  const [initialExcerptId, setInitialExcerptId] = useState<string | undefined>(undefined)
 
   // 清理长按计时器
   useEffect(() => {
@@ -112,13 +121,13 @@ function AppContent() {
     )
   }
 
-  // 处理添加小说
+  // 处理添加书籍
   const handleAddNovel = () => {
     setEditingNovel(null)
     setShowForm(true)
   }
 
-  // 处理编辑小说
+  // 处理编辑书籍
   const handleEditNovel = (novel: any) => {
     setEditingNovel(novel)
     setShowForm(true)
@@ -133,7 +142,7 @@ function AppContent() {
     }
   }
 
-  // 处理保存小说
+  // 处理保存书籍
   const handleSaveNovel = (data: any) => {
     if (editingNovel) {
       updateNovel(editingNovel.id, data)
@@ -144,7 +153,7 @@ function AppContent() {
     setEditingNovel(null)
   }
 
-  // 处理删除小说
+  // 处理删除书籍
   const handleDeleteNovel = (id: string) => {
     deleteNovel(id)
   }
@@ -154,15 +163,45 @@ function AppContent() {
     updateNovel(id, { coverColor: color })
   }
 
+  // 处理封面上传
+  const handleCoverImageUpload = (id: string, imageData: string) => {
+    updateNovel(id, { coverImage: imageData })
+    // 同时更新 viewingNovel 状态，确保详情页显示最新封面
+    if (viewingNovel && viewingNovel.id === id) {
+      setViewingNovel({ ...viewingNovel, coverImage: imageData })
+    }
+  }
+
+  // 处理分类变更
+  const handleCategoryChange = (id: string, categoryId: string) => {
+    updateNovel(id, { categoryId })
+    if (viewingNovel && viewingNovel.id === id) {
+      setViewingNovel({ ...viewingNovel, categoryId })
+    }
+  }
+
+  // 处理右键菜单
+  const handleContextMenu = (novelId: string, position: { x: number; y: number }) => {
+    setContextMenuNovelId(novelId)
+    setContextMenuPosition(position)
+  }
+
+  const handleCloseContextMenu = () => {
+    setContextMenuNovelId(null)
+    setContextMenuPosition(null)
+  }
+
   // 处理查看详情
   const handleViewDetail = (novel: any) => {
     setViewingNovel(novel)
   }
 
   // 处理保存详情
-  const handleSaveDetails = (details: string) => {
-    if (viewingNovel) {
-      updateNovel(viewingNovel.id, { details })
+  const handleSaveDetails = (id: string, updates: { details?: string }) => {
+    updateNovel(id, updates)
+    // 同时更新 viewingNovel 状态，确保详情页显示最新数据
+    if (viewingNovel && viewingNovel.id === id) {
+      setViewingNovel({ ...viewingNovel, ...updates })
     }
   }
 
@@ -192,7 +231,7 @@ function AppContent() {
 
   // 删除分类
   const handleDeleteCategory = (categoryId: string) => {
-    if (confirm('确定要删除这个分类吗？分类下的小说将移至默认分类。')) {
+    if (confirm('确定要删除这个分类吗？分类下的书籍将移至默认分类。')) {
       deleteCategory(categoryId)
       if (selectedCategory === categoryId) {
         setSelectedCategory(null)
@@ -230,14 +269,14 @@ function AppContent() {
     }
   }
 
-  // 筛选和排序后的小说列表
+  // 筛选和排序后的书籍列表
   const filteredNovels = useMemo(() => {
     let result = novels
 
     // 分类筛选
     if (selectedCategory) {
       result = result.filter(novel => {
-        // 默认分类包含 categoryId 为 'default' 或 null 的小说
+        // 默认分类包含 categoryId 为 'default' 或 null 的书籍
         if (selectedCategory === 'default') {
           return novel.categoryId === 'default' || novel.categoryId === null || novel.categoryId === undefined
         }
@@ -307,6 +346,7 @@ function AppContent() {
     <div className="app" onClick={() => {
       setActiveDropdown(null)
       setCategoryMenu(null)
+      handleCloseContextMenu()
       // 点击内容区关闭移动端侧边栏
       if (sidebarOpen) {
         setSidebarOpen(false)
@@ -321,7 +361,7 @@ function AppContent() {
       )}
 
       {/* 侧边栏 */}
-      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`} onClick={(e) => { e.stopPropagation(); handleCloseContextMenu(); }}>
         <div className="sidebar-header">
           <div className="sidebar-title">
             <span className="title-large">Novel</span>
@@ -364,7 +404,10 @@ function AppContent() {
             <div key={category.id} className="category-item-wrapper">
               <div
                 className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                onClick={() => {
+                  setSelectedCategory(selectedCategory === category.id ? null : category.id)
+                  setSidebarOpen(false)
+                }}
               >
                 <span className="category-name">{category.name}</span>
                 <span className="count">
@@ -377,7 +420,10 @@ function AppContent() {
             <div key={category.id} className="category-item-wrapper">
               <div
                 className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                onClick={() => {
+                  setSelectedCategory(selectedCategory === category.id ? null : category.id)
+                  setSidebarOpen(false)
+                }}
                 onContextMenu={(e) => {
                   e.preventDefault()
                   if (category.id !== 'default') {
@@ -461,36 +507,40 @@ function AppContent() {
         {/* 顶部工具栏 */}
         <header className="header">
           {/* 移动端汉堡菜单按钮 */}
-          <button
-            className="hamburger-menu"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              {sidebarOpen ? (
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              ) : (
-                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-              )}
-            </svg>
-          </button>
+          <div className="header-left">
+            <button
+              className="hamburger-menu"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                {sidebarOpen ? (
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                ) : (
+                  <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                )}
+              </svg>
+            </button>
 
-          <button className="btn btn-primary" onClick={handleAddNovel}>+ 添加小说</button>
-          <div className="header-controls">
-            {/* 状态筛选 */}
-            <div className="dropdown">
-              <button
-                className={`btn btn-secondary dropdown-toggle ${selectedStatus !== '全部状态' ? 'active-filter' : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  toggleDropdown('status')
-                }}
-              >
-                {selectedStatus}
-              </button>
-              {activeDropdown === 'status' && (
-                <div className="dropdown-menu">
-                  <div
-                    className={`dropdown-item ${selectedStatus === '全部状态' ? 'active' : ''}`}
+            <button className="btn btn-primary" onClick={handleAddNovel}>+ 添加书籍</button>
+          </div>
+
+          <div className="header-right">
+            <div className="header-filters">
+              {/* 状态筛选 */}
+              <div className="dropdown">
+                <button
+                  className={`btn btn-secondary dropdown-toggle ${selectedStatus !== '全部状态' ? 'active-filter' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleDropdown('status')
+                  }}
+                >
+                  {selectedStatus}
+                </button>
+                {activeDropdown === 'status' && (
+                  <div className="dropdown-menu">
+                    <div
+                      className={`dropdown-item ${selectedStatus === '全部状态' ? 'active' : ''}`}
                     onClick={() => selectStatus('全部状态')}
                   >
                     全部状态
@@ -622,66 +672,79 @@ function AppContent() {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* 布局切换 */}
+          {/* 视图切换 + 搜索 */}
+          <div className="view-search-group">
             <div className="view-toggle">
               <button
                 className={`btn-icon ${viewMode === 'card' ? 'active' : ''}`}
                 onClick={() => setViewMode('card')}
                 title="卡片视图"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="3" y="3" width="8" height="8" rx="2" />
-                  <rect x="13" y="3" width="8" height="8" rx="2" />
-                  <rect x="3" y="13" width="8" height="8" rx="2" />
-                  <rect x="13" y="13" width="8" height="8" rx="2" />
-                </svg>
-              </button>
-              <button
-                className={`btn-icon ${viewMode === 'list' ? 'active' : ''}`}
-                onClick={() => setViewMode('list')}
-                title="列表视图"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="3" y="4" width="18" height="3" rx="1" />
-                  <rect x="3" y="10" width="18" height="3" rx="1" />
-                  <rect x="3" y="16" width="18" height="3" rx="1" />
-                </svg>
-              </button>
-            </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="3" y="3" width="8" height="8" rx="2" />
+                    <rect x="13" y="3" width="8" height="8" rx="2" />
+                    <rect x="3" y="13" width="8" height="8" rx="2" />
+                    <rect x="13" y="13" width="8" height="8" rx="2" />
+                  </svg>
+                </button>
+                <button
+                  className={`btn-icon ${viewMode === 'list' ? 'active' : ''}`}
+                  onClick={() => setViewMode('list')}
+                  title="列表视图"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="3" y="4" width="18" height="3" rx="1" />
+                    <rect x="3" y="10" width="18" height="3" rx="1" />
+                    <rect x="3" y="16" width="18" height="3" rx="1" />
+                  </svg>
+                </button>
+              </div>
 
-            {/* 搜索框 */}
-            <input
-              type="text"
-              placeholder="搜索小说..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+              {/* 搜索框 */}
+              <input
+                type="text"
+                placeholder="搜索书籍..."
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </header>
 
-        {/* 小说列表区域 */}
-        <div className={viewMode === 'card' ? 'novel-grid' : 'novel-list'}>
-          {filteredNovels.length > 0 ? (
-            filteredNovels.map(novel => (
-              <NovelCard
-                key={novel.id}
-                novel={novel}
-                viewMode={viewMode}
-                onEdit={handleEditNovel}
-                onDelete={handleDeleteNovel}
-                onColorChange={handleColorChange}
-                onViewDetail={handleViewDetail}
-                onInlineEditSave={handleInlineEditSave}
-              />
-            ))
-          ) : (
-            <div className="empty-state">
-              <p>{searchTerm ? '没有找到匹配的小说' : '还没有添加任何小说'}</p>
-              <p>点击上方"添加小说"按钮开始记录</p>
-            </div>
-          )}
+        {/* 内容区域滚动包裹器 */}
+        <div className="content-scroll-wrapper">
+          {/* 书籍列表区域 */}
+          <div className={viewMode === 'card' ? 'novel-grid' : 'novel-list'}>
+            {filteredNovels.length > 0 ? (
+              filteredNovels.map(novel => (
+                <NovelCard
+                  key={novel.id}
+                  novel={novel}
+                  viewMode={viewMode}
+                  onEdit={handleEditNovel}
+                  onDelete={handleDeleteNovel}
+                  onColorChange={handleColorChange}
+                  onViewDetail={handleViewDetail}
+                  onInlineEditSave={handleInlineEditSave}
+                  onCoverImageUpload={handleCoverImageUpload}
+                  onCategoryChange={handleCategoryChange}
+                  categories={categories}
+                  contextMenuOpen={contextMenuNovelId === novel.id}
+                  contextMenuPosition={contextMenuPosition}
+                  onContextMenu={handleContextMenu}
+                  onCloseContextMenu={handleCloseContextMenu}
+                />
+              ))
+            ) : (
+              <div className="empty-state">
+                <p>{searchTerm ? '没有找到匹配的书籍' : '还没有添加任何书籍'}</p>
+                <p>点击上方"添加书籍"按钮开始记录</p>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
@@ -701,9 +764,17 @@ function AppContent() {
       {viewingNovel && (
         <NovelDetail
           novel={viewingNovel}
-          onSave={handleSaveDetails}
-          onUpdate={handleInlineEditSave}
-          onBack={() => setViewingNovel(null)}
+          onUpdate={handleSaveDetails}
+          onBack={() => {
+            setViewingNovel(null)
+            if (returnToStats) {
+              setShowStats(true)
+              setReturnToStats(false)
+              setInitialExcerptId(undefined)
+            }
+          }}
+          initialActiveTab={novelDetailInitialTab}
+          initialExcerptId={initialExcerptId}
         />
       )}
 
@@ -722,6 +793,19 @@ function AppContent() {
         <StatsDashboard
           novels={novels}
           onClose={() => setShowStats(false)}
+          onViewNovel={(novel) => {
+            setShowStats(false)
+            setNovelDetailInitialTab('notes')
+            setReturnToStats(true)
+            setViewingNovel(novel)
+          }}
+          onViewExcerpt={(novel: Novel, excerptId: string) => {
+            setShowStats(false)
+            setNovelDetailInitialTab('excerpts')
+            setInitialExcerptId(excerptId)
+            setReturnToStats(true)
+            setViewingNovel(novel)
+          }}
         />
       )}
     </div>

@@ -7,7 +7,7 @@ interface DatePickerProps {
   placeholder?: string;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = '选择日期' }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = '' }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [view, setView] = useState<'calendar' | 'months' | 'years'>('calendar');
   const [currentDate, setCurrentDate] = useState(new Date());

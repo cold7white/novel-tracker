@@ -1,7 +1,9 @@
+import type { Excerpt } from './excerpt';
+
 // 阅读状态类型
 export type ReadingStatus = 'reading' | 'read' | 'want';
 
-// 小说数据模型
+// 书籍数据模型
 export interface Novel {
   id: string;              // 唯一标识 (UUID)
   title: string;           // 书名
@@ -12,15 +14,17 @@ export interface Novel {
   details: string;         // 详情内容 (HTML或纯文本)
   readingDate?: string;    // 阅读日期 (YYYY-MM-DD格式)
   coverColor: string;      // 封面颜色 (十六进制，默认#6B7280)
+  coverImage?: string;     // 封面图片 (base64格式，可选)
   createdAt: Date;         // 创建时间
   updatedAt: Date;         // 最后修改时间
   categoryId?: string;     // 所属分类ID (可选)
+  excerpts?: Excerpt[];    // 书摘数组（可选）
 }
 
-// 创建小说的输入类型（不包含自动生成的字段）
+// 创建书籍的输入类型（不包含自动生成的字段）
 export type CreateNovelInput = Omit<Novel, 'id' | 'createdAt' | 'updatedAt'>;
 
-// 更新小说的输入类型（部分字段可选）
+// 更新书籍的输入类型（部分字段可选）
 export type UpdateNovelInput = Partial<Omit<Novel, 'id' | 'createdAt' | 'updatedAt'>>;
 
 // 筛选条件类型

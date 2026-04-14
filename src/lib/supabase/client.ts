@@ -57,9 +57,11 @@ export type Database = {
           details: string | null
           reading_date: string | null
           cover_color: string
+          cover_image: string | null
           created_at: string
           updated_at: string
           category_id: string | null
+          excerpts: any[] | null
         }
         Insert: {
           id?: string
@@ -72,9 +74,11 @@ export type Database = {
           details?: string | null
           reading_date?: string | null
           cover_color?: string
+          cover_image?: string | null
           created_at?: string
           updated_at?: string
           category_id?: string | null
+          excerpts?: any[] | null
         }
         Update: {
           id?: string
@@ -87,9 +91,11 @@ export type Database = {
           details?: string | null
           reading_date?: string | null
           cover_color?: string
+          cover_image?: string | null
           created_at?: string
           updated_at?: string
           category_id?: string | null
+          excerpts?: any[] | null
         }
       }
       categories: {

@@ -8,6 +8,47 @@
   z-index: 3000;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+
+  /* 阅读趋势动画 */
+  --trend-dash-len: 10000;
+}
+
+@keyframes trendDraw {
+  from { stroke-dashoffset: var(--trend-dash-len); }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes trendFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.trend-chart-svg path:not([fill]) {
+  stroke-dasharray: var(--trend-dash-len);
+  animation: trendDraw 0.5s ease forwards;
+}
+
+/* 移动端折线图简单动画 */
+.trend-line-mobile {
+  opacity: 0;
+  animation: trendFadeIn 0.4s ease 0.1s forwards;
+}
+
+.trend-area-mobile {
+  opacity: 0;
+  animation: trendFadeIn 0.5s ease 0.2s forwards;
+}
+
+.trend-chart-svg circle {
+  animation: trendFadeIn 0.3s ease forwards;
+}
+
+.trend-chart-svg text {
+  animation: trendFadeIn 0.3s ease forwards;
+}
+
+.stats-overlay {
   cursor: default;
 }
 
@@ -16,7 +57,10 @@
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   cursor: default;
+  flex: 1;
+  min-height: 0;
 }
 
 /* 顶部工具栏 */
@@ -113,28 +157,33 @@
 
 .trend-controls {
   display: flex;
-  gap: var(--spacing-sm);
+  background-color: var(--color-gray-100);
+  border-radius: var(--border-radius-full);
+  padding: 3px;
+  position: relative;
 }
 
 .trend-btn {
-  padding: var(--spacing-xs) var(--spacing-md);
-  background-color: var(--color-white);
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-full);
   cursor: pointer;
   font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
-  transition: all 0.2s ease;
+  color: var(--color-gray-500);
+  transition: color 0.25s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .trend-btn:hover {
-  background-color: var(--color-gray-50);
+  color: var(--color-gray-700);
 }
 
 .trend-btn.active {
-  background-color: var(--color-gray-800);
-  color: var(--color-white);
-  border-color: var(--color-gray-800);
+  color: var(--color-gray-800);
+  background-color: var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* 饼图 */
@@ -204,7 +253,7 @@
 
 .rating-bar {
   width: 50px;
-  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+  border-radius: 9999px 9999px 0 0;
   transition: height 0.3s ease;
   min-height: 2px;
 }
@@ -254,15 +303,15 @@
 }
 
 .leaderboard-rank {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #EF476F;
   color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-size-sm);
+  font-size: 12px;
   font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
@@ -314,6 +363,33 @@
   width: 100%;
   overflow-x: auto;
   padding: var(--spacing-md) 0;
+  animation: chartFadeSlide 0.3s ease;
+  scroll-behavior: smooth;
+}
+
+.line-chart-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.line-chart-container::-webkit-scrollbar-track {
+  background: var(--color-gray-100);
+  border-radius: 3px;
+}
+
+.line-chart-container::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 3px;
+}
+
+@keyframes chartFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .line-chart-container svg {
@@ -357,6 +433,143 @@
   }
 
   .line-chart-container svg {
-    font-size: 10px;
+    font-size: 9px;
+  }
+
+  .line-chart-container {
+    font-size: 9px;
+  }
+}
+
+/* 最近阅读和最近书摘区域 */
+.recent-section {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-gray-200);
+  align-items: stretch;
+}
+
+.recent-books,
+.recent-excerpts {
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-books h3,
+.recent-excerpts h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-800);
+}
+
+/* 最近阅读书籍列表 */
+.recent-books-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.recent-book-item {
+  flex-shrink: 0;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.recent-book-item:hover {
+  transform: translateY(-2px);
+}
+
+.recent-book-cover {
+  width: 110px;
+  height: 154px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cover-initial {
+  font-size: 38px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.recent-book-title {
+  font-size: 13px;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-gray-600);
+}
+
+/* 最近书摘列表 - 2×2 网格 */
+.recent-excerpts-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.recent-excerpt-card {
+  background: var(--color-gray-50);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.recent-excerpt-card:hover {
+  background: var(--color-gray-100);
+}
+
+.excerpt-card-header {
+  font-size: 13px;
+  color: var(--color-gray-500);
+  margin-bottom: 6px;
+}
+
+.excerpt-card-content {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-gray-700);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.empty-recent {
+  color: var(--color-gray-400);
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+/* 最近阅读响应式 */
+@media (max-width: 768px) {
+  .recent-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .recent-book-cover {
+    width: 80px;
+    height: 112px;
+  }
+
+  .cover-initial {
+    font-size: 28px;
+  }
+
+  .recent-book-title {
+    max-width: 80px;
+    font-size: 11px;
   }
 }

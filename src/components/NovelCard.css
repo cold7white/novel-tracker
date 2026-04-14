@@ -2,7 +2,7 @@
   background-color: var(--color-white);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
+  overflow: visible;
   cursor: default;
 }
 
@@ -12,20 +12,23 @@
 }
 
 .novel-cover {
-  width: 100%;
+  width: calc(100% - var(--spacing-sm) * 2);
   aspect-ratio: 3/4;
   max-height: 180px;
+  margin: var(--spacing-sm) var(--spacing-sm) 0;
+  border-radius: var(--border-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   position: relative;
   cursor: default;
+  overflow: hidden;
 }
 
 .novel-cover-title {
   color: var(--color-white);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   text-align: center;
   padding: var(--spacing-sm);
@@ -36,8 +39,33 @@
   -ms-user-select: none;
 }
 
+.cover-status-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  padding: 3px 10px 3px 6px;
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-white);
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cover-status-badge.status-reading {
+  background-color: var(--color-reading);
+}
+
+.cover-status-badge.status-read {
+  background-color: var(--color-read);
+}
+
+.cover-status-badge.status-want {
+  background-color: var(--color-want);
+}
+
 .novel-content {
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-sm);
   cursor: default;
 }
 
@@ -106,7 +134,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 4px;
   margin-bottom: 2px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .novel-status-row .novel-status {
@@ -134,30 +165,39 @@
   -ms-user-select: none;
 }
 
+.card-view-content .novel-reading-date {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  user-select: none;
+}
+
+.card-view-content .novel-reading-date.empty {
+  display: none;
+}
+
 .novel-status-row .novel-reading-date.empty {
-  visibility: hidden;
+  display: none;
 }
 
 
 .card-view-content .novel-rating {
+  display: flex;
+  gap: 6px;
   margin-bottom: 2px;
 }
 
 .novel-rating {
-  gap: 2px;
+  display: flex;
+  gap: 6px;
   margin-bottom: 2px;
 }
 
-.star {
+/* 卡片中星星大小覆盖 */
+.novel-rating .star {
   font-size: 14px;
-  margin-right: 2px;
-  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-  display: inline-block;
-  transition: transform 0.1s ease;
-}
-
-.star.filled {
-  filter: drop-shadow(0 1px 2px rgba(255, 184, 0, 0.3));
 }
 
 .novel-tags {
@@ -170,48 +210,22 @@
   -ms-user-select: none;
 }
 
-.tag {
-  display: inline-block;
-  padding: 2px 6px;
-  background-color: var(--color-gray-100);
-  border-radius: var(--border-radius-full);
-  font-size: 10px;
-  color: var(--color-gray-600);
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
 
-/* 编辑按钮 */
-.edit-buttons {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  align-items: center;
-}
 
+/* 卡片内编辑按钮大小覆盖 */
 .edit-confirm-btn,
 .edit-cancel-btn {
   padding: 10px var(--spacing-lg);
-  border-radius: var(--border-radius-md);
   font-size: 16px;
+  min-width: 100px;
   font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
-  min-width: 100px;
-  text-align: center;
 }
 
 .edit-confirm-btn {
-  background-color: #1F2937;
-  color: #FFFFFF;
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -221,13 +235,13 @@
 }
 
 .edit-cancel-btn {
-  background-color: #FFFFFF;
-  color: #1F2937;
+  background-color: var(--color-white);
+  color: var(--color-gray-800);
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .edit-cancel-btn:hover {
-  background-color: #F9FAFB;
+  background-color: var(--color-gray-50);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
@@ -239,7 +253,7 @@
 
 .edit-field label {
   display: block;
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   color: var(--color-gray-600);
   margin-bottom: 2px;
   cursor: default;
@@ -248,39 +262,33 @@
 .edit-field input,
 .edit-field select {
   width: 100%;
-  padding: 2px var(--spacing-xs);
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-sm);
-  font-family: var(--font-family);
-  cursor: text;
+  padding: 2px 6px;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: left;
+}
+
+.edit-field select {
+  padding-right: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
 }
 
 .edit-field input:focus,
 .edit-field select:focus {
-  outline: none;
   border-color: var(--color-gray-400);
 }
 
-.rating-input {
-  display: flex;
-  gap: 2px;
-}
-
-.rating-input-compact .star {
-  font-size: 14px !important;
-}
-
 .rating-input .star {
-  cursor: pointer;
   font-size: 16px;
-  transition: transform 0.1s ease;
-  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-  display: inline-block;
 }
 
-.rating-input .star:hover {
-  transform: scale(1.2);
+.edit-field .rating-input .star svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* 标签编辑 */
@@ -298,42 +306,21 @@
   cursor: default;
 }
 
-.tags-edit .tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 2px 6px;
-  background-color: var(--color-gray-100);
-  border-radius: var(--border-radius-full);
+.tags-edit .editable-tag {
   font-size: 9px;
-  color: var(--color-gray-600);
-  cursor: default;
 }
 
-.tags-edit .tag span {
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--color-gray-400);
-  transition: color 0.2s ease;
-}
-
-.tags-edit .tag span:hover {
-  color: var(--color-gray-600);
+.tags-edit .editable-tag .remove-tag-btn {
+  font-size: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 .tags-edit input {
   width: 100%;
-  padding: 2px var(--spacing-xs);
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--border-radius-sm);
+  padding: 2px 6px;
   font-size: var(--font-size-xs);
-  font-family: var(--font-family);
-  cursor: text;
-}
-
-.tags-edit input:focus {
-  outline: none;
-  border-color: var(--color-gray-400);
+  line-height: 1.4;
 }
 
 /* 右键菜单 */
@@ -408,6 +395,38 @@
   border-color: var(--color-gray-400);
 }
 
+/* 分类选择子菜单 */
+.category-picker-submenu {
+  border-top: 1px solid var(--color-gray-200);
+  background-color: var(--color-gray-50);
+}
+
+.category-picker-title {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.category-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.category-option:hover {
+  background-color: var(--color-gray-100);
+}
+
+.category-option.selected {
+  background-color: var(--color-gray-200);
+  font-weight: var(--font-weight-medium);
+}
+
 /* 列表视图样式 */
 .novel-list-item {
   background-color: var(--color-white);
@@ -432,10 +451,14 @@
   width: 90px;
   height: 120px;
   flex-shrink: 0;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-md);
   max-height: none;
   aspect-ratio: auto;
-  align-self: center;
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .novel-list-item .novel-cover-title {
@@ -537,11 +560,13 @@
   overflow: hidden;
   flex-shrink: 1;
   gap: 4px;
+  display: flex;
+  align-items: center;
 }
 
 .novel-list-item .tag {
-  font-size: 10px;
-  padding: 2px 6px;
+  font-size: 12px;
+  padding: 3px 6px;
   flex-shrink: 0;
 }
 
@@ -583,7 +608,9 @@
   position: static;
   transform: none;
   margin-top: var(--spacing-xs);
+  display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   width: 100%;
 }
@@ -605,16 +632,47 @@
     max-height: 140px;
   }
 
+  .novel-cover-title {
+    font-size: var(--font-size-sm);
+  }
+
   .novel-content {
     padding: var(--spacing-xs) var(--spacing-xs);
   }
 
   .novel-title {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
   }
 
   .novel-author {
+    font-size: 11px;
+  }
+
+  .edit-confirm-btn {
+    padding: 6px 12px;
     font-size: var(--font-size-xs);
+    min-width: 60px;
+  }
+
+  .cover-status-badge {
+    padding: 2px 8px 2px 5px;
+    font-size: 9px;
+    bottom: 4px;
+    left: 0;
+  }
+
+  .rating-input .star {
+    font-size: 14px;
+  }
+
+  .edit-field .rating-input .star svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .novel-rating,
+  .card-view-content .novel-rating {
+    gap: 4px;
   }
 }
 
@@ -623,6 +681,14 @@
   .novel-list-item {
     gap: var(--spacing-sm);
     padding: 2px var(--spacing-sm);
+  }
+
+  .list-view-content {
+    gap: 4px;
+  }
+
+  .novel-list-item .content-row {
+    gap: var(--spacing-xs);
   }
 
   .novel-list-item .novel-cover {
@@ -641,5 +707,12 @@
   .novel-list-item .novel-cover-title {
     font-size: var(--font-size-xs);
     padding: 2px;
+  }
+
+  .novel-list-item .edit-confirm-btn,
+  .novel-list-item .edit-cancel-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    min-width: 50px;
   }
 }

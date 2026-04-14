@@ -1,0 +1,318 @@
+/* 最外层容器 */
+.excerpt-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+  cursor: default;
+}
+
+/* 内容容器 */
+.excerpt-detail-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+/* 头部 */
+.excerpt-detail-header {
+  padding: 8px 16px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.excerpt-detail-close-btn {
+  background: none !important;
+  border: none !important;
+  font-size: 24px;
+  color: #999 !important;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.excerpt-detail-close-btn:hover {
+  color: #4b5563 !important;
+}
+
+/* 主体内容区 */
+.excerpt-detail-body {
+  padding: 12px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 元信息区域 */
+.excerpt-detail-body .meta-section {
+  flex-shrink: 0;
+}
+
+.excerpt-detail-body .meta-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 24px;
+}
+
+.excerpt-detail-body .meta-item {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+}
+
+/* 标签样式 - 统一 */
+.excerpt-detail-body .meta-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #4b5563;
+  flex-shrink: 0;
+  width: 40px;
+  margin-right: 2px;
+}
+
+/* 输入框样式 - 统一 */
+.excerpt-detail-body .meta-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  font-size: var(--font-size-sm) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  outline: none !important;
+  transition: all 0.2s ease;
+  background: #fafafa !important;
+  color: #4b5563 !important;
+  text-align: left;
+}
+
+.excerpt-detail-body .meta-input:focus {
+  border-color: #999 !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.excerpt-detail-body input[type="number"].meta-input {
+  -moz-appearance: textfield;
+  appearance: none;
+}
+
+.excerpt-detail-body input[type="number"]::-webkit-inner-spin-button,
+.excerpt-detail-body input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 日期选择器 */
+.excerpt-detail-body .date-picker-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  font-size: var(--font-size-sm) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  background: #fafafa !important;
+  color: #4b5563 !important;
+  text-align: left !important;
+}
+
+/* 标题样式 - 统一 */
+.excerpt-detail-body .section-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+/* 摘录内容区域 */
+.excerpt-detail-body .content-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.excerpt-detail-body .content-textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 10px 12px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  font-size: var(--font-size-sm) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  background: #fafafa !important;
+  color: #4b5563 !important;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+}
+
+.excerpt-detail-body .content-textarea:focus {
+  border-color: #999 !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.excerpt-detail-body .content-textarea::placeholder {
+  color: #999 !important;
+}
+
+/* 笔记区域 */
+.excerpt-detail-body .note-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.excerpt-detail-body .note-textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 10px 12px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  font-size: var(--font-size-sm) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  background: #fafafa !important;
+  color: #4b5563 !important;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+}
+
+.excerpt-detail-body .note-textarea:focus {
+  border-color: #999 !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.excerpt-detail-body .note-textarea::placeholder {
+  color: #999 !important;
+}
+
+/* 操作按钮 */
+.excerpt-detail-content .action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 16px;
+  border-top: 1px solid #eee;
+  background-color: #fff;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.excerpt-detail-content .action-btn {
+  background-color: #333 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+  border-radius: 4px !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: 500;
+  padding: 6px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.excerpt-detail-content .action-btn.cancel-btn {
+  background-color: #fff !important;
+  color: #4b5563 !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.excerpt-detail-content .action-btn.cancel-btn:hover {
+  background-color: #f5f5f5 !important;
+  border-color: #d1d5db !important;
+}
+
+.excerpt-detail-content .action-btn:hover {
+  background-color: #555 !important;
+  border-color: #555 !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .excerpt-detail-overlay {
+    padding: 0;
+  }
+
+  .excerpt-detail-content {
+    max-width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    position: fixed;
+    bottom: 0;
+  }
+
+  .excerpt-detail-header {
+    padding: 8px 12px;
+  }
+
+  .excerpt-detail-body {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .excerpt-detail-body .meta-row {
+    gap: 6px;
+  }
+
+  .excerpt-detail-body .content-textarea,
+  .excerpt-detail-body .note-textarea {
+    font-size: var(--font-size-sm) !important;
+    padding: 8px !important;
+  }
+
+  .excerpt-detail-content .action-buttons {
+    padding: 8px 12px;
+  }
+
+  .excerpt-detail-content .action-btn {
+    padding: 6px 16px;
+    font-size: var(--font-size-sm) !important;
+  }
+
+  .excerpt-detail-body .section-title {
+    font-size: var(--font-size-sm);
+    margin-bottom: 4px;
+  }
+}

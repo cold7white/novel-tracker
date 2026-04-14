@@ -68,71 +68,98 @@
 }
 
 .form-group {
-  margin-bottom: var(--spacing-lg);
-}
-
-.form-group.date-field {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
 }
 
 .form-group label {
   display: block;
   margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  font-size: 14px;
   font-weight: var(--font-weight-medium);
   color: var(--color-gray-700);
 }
 
-.form-group input,
-.form-group select {
+/* 统一输入框样式 */
+.novel-form input,
+.novel-form select {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 8px 12px;
   border: 1px solid var(--color-gray-300);
   border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
+  font-size: 14px;
   font-family: var(--font-family);
   transition: border-color 0.2s ease;
+  line-height: 1.5;
+  color: var(--color-gray-800);
+  box-sizing: border-box;
+  background-color: var(--color-white);
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.novel-form input:focus,
+.novel-form select:focus {
   outline: none;
   border-color: var(--color-gray-400);
+}
+
+.novel-form input::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* NovelForm 中的 DatePicker 输入框覆写 */
+.novel-form .date-picker-input {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+  gap: 20px;
 }
 
-.rating-input {
+/* 状态按钮组 */
+.status-buttons {
   display: flex;
-  gap: 4px;
+  gap: 10px;
+}
+
+.status-btn {
+  flex: 1;
+  padding: 7px 6px;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-white);
+  font-size: 12px;
+  font-family: var(--font-family);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-btn:hover {
+  border-color: var(--color-gray-400);
+  background-color: var(--color-gray-50);
+}
+
+.status-btn.active {
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-800);
+  color: var(--color-white);
+}
+
+/* 表单中星星大小覆盖 */
+.rating-input {
   padding: var(--spacing-xs) 0;
-  align-items: center;
 }
 
 .rating-input .star {
   font-size: 24px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
   user-select: none;
-  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-  display: inline-block;
-  line-height: 1;
 }
 
 .rating-input .star .star-icon {
   display: block;
-}
-
-.rating-input .star:hover {
-  transform: scale(1.1);
-}
-
-.rating-input .star.filled {
-  filter: drop-shadow(0 1px 2px rgba(255, 184, 0, 0.3));
 }
 
 .color-options {
@@ -159,10 +186,11 @@
   box-shadow: 0 0 0 2px var(--color-white), 0 0 0 4px var(--color-gray-800);
 }
 
+/* 标签输入 */
 .tags-input {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: 4px;
 }
 
 .tags-list {
@@ -171,43 +199,53 @@
   gap: var(--spacing-xs);
 }
 
-.tags-input .tag {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: 3px 8px;
-  background-color: var(--color-gray-100);
-  border-radius: var(--border-radius-full);
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
-}
-
-.tags-input .tag button {
-  background: none;
-  border: none;
-  color: var(--color-gray-400);
-  cursor: pointer;
+.tags-input input {
+  width: 100%;
+  padding: 10px 12px;
   font-size: 14px;
-  padding: 0;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  line-height: 1.4;
 }
 
-.tags-input .tag button:hover {
-  background-color: var(--color-gray-300);
-  color: var(--color-gray-700);
+.tags-input input:focus {
+  border-color: var(--color-gray-400);
+}
+
+.tags-input input::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* 表单中可编辑标签大小覆盖 */
+.tags-input .editable-tag {
+  font-size: 13px;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-2xl);
-  padding-top: var(--spacing-lg);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
   border-top: 1px solid var(--color-gray-200);
+}
+
+.form-actions .btn {
+  padding: 8px 20px;
+  font-size: 14px;
+}
+
+/* 移动端响应式 */
+@media (max-width: 480px) {
+  .status-btn {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .color-options {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .color-option {
+    width: 32px;
+    height: 32px;
+  }
 }

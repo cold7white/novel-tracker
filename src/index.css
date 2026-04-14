@@ -15,8 +15,8 @@
   --color-black: #000000;
 
   /* 状态颜色 */
-  --color-reading: #3B82F6;   /* 在读 - 蓝色 */
-  --color-read: #10B981;      /* 已读 - 绿色 */
+  --color-reading: #EF476F;   /* 在读 - 粉红色 */
+  --color-read: #00A896;      /* 已读 - 青色 */
   --color-want: #F59E0B;      /* 想看 - 橙色 */
 
   /* 红色系 */
@@ -103,6 +103,154 @@ body {
   border: none;
 }
 
+/* 标签基础样式 - 统一所有页面的标签外观 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-gray-100) 100%);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-700);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* 可编辑标签（带删除按钮）- 继承 .tag 基础样式 */
+.editable-tag {
+  position: relative;
+  padding-right: 20px;
+}
+
+/* 删除按钮 */
+.remove-tag-btn {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.remove-tag-btn:hover {
+  color: var(--color-gray-600);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== 评分星星基础样式 ===== */
+.star {
+  font-size: 14px;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+  line-height: 1;
+}
+
+.star.filled {
+  filter: drop-shadow(0 1px 2px rgba(255, 184, 0, 0.3));
+}
+
+.rating {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.rating-input {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.rating-input .star {
+  cursor: pointer;
+}
+
+.rating-input .star:hover {
+  transform: scale(1.2);
+}
+
+/* ===== 操作按钮基础样式 ===== */
+
+/* 保存/确定按钮 - 深色主操作 */
+.save-btn,
+.save-edit-btn,
+.edit-confirm-btn {
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: 1px solid var(--color-gray-800);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.save-btn:hover,
+.save-edit-btn:hover,
+.edit-confirm-btn:hover {
+  background-color: var(--color-gray-700);
+  border-color: var(--color-gray-700);
+}
+
+.save-btn:active,
+.edit-confirm-btn:active {
+  transform: translateY(0);
+}
+
+.save-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 取消按钮 - 浅色次操作 */
+.cancel-edit-btn,
+.edit-cancel-btn {
+  background-color: var(--color-white);
+  color: var(--color-gray-600);
+  border: 1px solid var(--color-gray-300);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.cancel-edit-btn:hover,
+.edit-cancel-btn:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+}
+
 .btn-primary {
   background-color: var(--color-primary);
   color: var(--color-white);
@@ -139,11 +287,19 @@ input, textarea, select {
   font-size: var(--font-size-sm);
   font-family: var(--font-family);
   transition: border-color 0.2s ease;
+  background-color: var(--color-white);
+  color: var(--color-gray-800);
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--color-primary);
+}
+
+input:hover, textarea:hover, select:hover {
+  border-color: var(--color-gray-400);
 }
 
 /* 状态指示器 */
@@ -167,24 +323,6 @@ input:focus, textarea:focus, select:focus {
   background-color: var(--color-want);
 }
 
-/* 标签样式 */
-.tag {
-  display: inline-block;
-  padding: 2px 8px;
-  background-color: var(--color-gray-100);
-  border-radius: var(--border-radius-full);
-  font-size: var(--font-size-xs);
-  color: var(--color-gray-600);
-  margin-right: 4px;
-  margin-bottom: 4px;
-}
-
-.tag-add {
-  border: 1px dashed var(--color-gray-300);
-  background-color: transparent;
-  cursor: pointer;
-}
-
 /* 响应式设计基础 */
 @media (max-width: 768px) {
   :root {
@@ -195,5 +333,12 @@ input:focus, textarea:focus, select:focus {
     --spacing-compact-sm: 4px;
     --spacing-compact-md: 6px;
     --spacing-compact-lg: 8px;
+  }
+
+  /* 移动端星星间距统一 */
+  .rating,
+  .rating-input,
+  .novel-rating {
+    gap: 4px;
   }
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Novel, ReadingStatus } from '../types/novel';
 import { COVER_COLORS } from '../utils/generateId';
 import DatePicker from './DatePicker';
+import { useNovels } from '../contexts/NovelContext';
 import './NovelForm.css';
 
 interface NovelFormProps {
@@ -14,11 +15,14 @@ interface NovelFormProps {
     tags: string[];
     readingDate?: string;
     coverColor: string;
+    coverImage?: string;
+    categoryId?: string;
   }) => void;
   onCancel: () => void;
 }
 
 const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
+  const { categories } = useNovels();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [status, setStatus] = useState<ReadingStatus>('read');
@@ -27,6 +31,7 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
   const [tagInput, setTagInput] = useState('');
   const [readingDate, setReadingDate] = useState('');
   const [coverColor, setCoverColor] = useState('#6B7280');
+  const [categoryId, setCategoryId] = useState('default');
 
   useEffect(() => {
     if (novel) {
@@ -37,6 +42,7 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
       setTags(novel.tags);
       setReadingDate(novel.readingDate || '');
       setCoverColor(novel.coverColor);
+      setCategoryId(novel.categoryId || 'default');
     }
   }, [novel]);
 
@@ -53,7 +59,9 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
       rating,
       tags: tags.filter(t => t.trim()),
       readingDate: readingDate.trim(),
-      coverColor
+      coverColor,
+      coverImage: novel?.coverImage,
+      categoryId
     });
   };
 
@@ -79,7 +87,7 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>{novel ? '编辑小说' : '添加小说'}</h3>
+          <h3>{novel ? '编辑书籍' : '添加书籍'}</h3>
           <button className="close-btn" onClick={onCancel}>×</button>
         </div>
         <form onSubmit={handleSubmit} className="novel-form">
@@ -107,11 +115,29 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
           <div className="form-row">
             <div className="form-group">
               <label>阅读状态</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value as ReadingStatus)}>
-                <option value="want">想看</option>
-                <option value="reading">在读</option>
-                <option value="read">已读</option>
-              </select>
+              <div className="status-buttons">
+                <button
+                  type="button"
+                  className={`status-btn ${status === 'read' ? 'active' : ''}`}
+                  onClick={() => setStatus('read')}
+                >
+                  已读
+                </button>
+                <button
+                  type="button"
+                  className={`status-btn ${status === 'reading' ? 'active' : ''}`}
+                  onClick={() => setStatus('reading')}
+                >
+                  在读
+                </button>
+                <button
+                  type="button"
+                  className={`status-btn ${status === 'want' ? 'active' : ''}`}
+                  onClick={() => setStatus('want')}
+                >
+                  想读
+                </button>
+              </div>
             </div>
 
             <div className="form-group">
@@ -139,13 +165,23 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
             </div>
           </div>
 
-          <div className="form-group date-field">
-            <label>阅读日期</label>
-            <DatePicker
-              value={readingDate}
-              onChange={setReadingDate}
-              placeholder="选择阅读日期"
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label>阅读日期</label>
+              <DatePicker
+                value={readingDate}
+                onChange={setReadingDate}
+                placeholder="选择阅读日期"
+              />
+            </div>
+            <div className="form-group">
+              <label>分类</label>
+              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="form-group">
@@ -167,9 +203,9 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
             <div className="tags-input">
               <div className="tags-list">
                 {tags.map((tag, index) => (
-                  <span key={index} className="tag">
+                  <span key={index} className="tag editable-tag">
                     {tag}
-                    <button type="button" onClick={() => removeTag(tag)}>×</button>
+                    <button type="button" className="remove-tag-btn" onClick={() => removeTag(tag)}>×</button>
                   </span>
                 ))}
               </div>

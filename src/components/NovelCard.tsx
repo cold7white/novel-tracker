@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Novel } from '../types/novel';
+import type { Category } from '../types/category';
 import { COVER_COLORS } from '../utils/generateId';
 import DatePicker from './DatePicker';
 import './NovelCard.css';
@@ -12,6 +13,13 @@ interface NovelCardProps {
   onColorChange: (id: string, color: string) => void;
   onViewDetail: (novel: Novel) => void;
   onInlineEditSave?: (id: string, updates: Partial<Novel>) => void;
+  onCoverImageUpload?: (id: string, imageData: string) => void;
+  onCategoryChange?: (id: string, categoryId: string) => void;
+  categories?: Category[];
+  contextMenuOpen?: boolean;
+  contextMenuPosition?: { x: number; y: number } | null;
+  onContextMenu?: (novelId: string, position: { x: number; y: number }) => void;
+  onCloseContextMenu?: () => void;
 }
 
 const NovelCard: React.FC<NovelCardProps> = ({
@@ -21,10 +29,17 @@ const NovelCard: React.FC<NovelCardProps> = ({
   onDelete,
   onColorChange,
   onViewDetail,
-  onInlineEditSave
+  onInlineEditSave,
+  onCoverImageUpload,
+  onCategoryChange,
+  categories = [],
+  contextMenuOpen = false,
+  contextMenuPosition,
+  onContextMenu,
+  onCloseContextMenu
 }) => {
-  const [showMenu, setShowMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(novel.title);
   const [editAuthor, setEditAuthor] = useState(novel.author);
@@ -33,25 +48,86 @@ const NovelCard: React.FC<NovelCardProps> = ({
   const [editTags, setEditTags] = useState(novel.tags);
   const [editReadingDate, setEditReadingDate] = useState(novel.readingDate || '');
   const [tagInput, setTagInput] = useState('');
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
   // 长按状态
   const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
 
+  // 文件上传引用
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+  const [adjustedPosition, setAdjustedPosition] = useState<{ x: number; y: number } | null>(null);
+
+  // 处理封面上传
+  const handleCoverUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && onCoverImageUpload) {
+      // 检查文件大小（限制为 500KB）
+      const maxSize = 500 * 1024; // 500KB in bytes
+      if (file.size > maxSize) {
+        alert('图片太大！请选择小于 500KB 的图片');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        console.log('📷 [Cover Upload] Image size:', {
+          originalSize: file.size,
+          base64Size: base64String.length,
+          fileName: file.name
+        });
+        onCoverImageUpload(novel.id, base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+    // 重置input以允许再次选择同一文件
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
   // 点击外部关闭菜单
   useEffect(() => {
     const handleClickOutside = () => {
-      setShowMenu(false);
-      setShowColorPicker(false);
+      if (contextMenuOpen) {
+        onCloseContextMenu?.();
+        setShowColorPicker(false);
+        setShowCategoryPicker(false);
+      }
     };
 
-    if (showMenu) {
+    if (contextMenuOpen) {
       document.addEventListener('click', handleClickOutside);
       return () => {
         document.removeEventListener('click', handleClickOutside);
       };
     }
-  }, [showMenu]);
+  }, [contextMenuOpen, onCloseContextMenu]);
+
+  // 菜单位置边界检测
+  useEffect(() => {
+    if (contextMenuOpen && contextMenuPosition && contextMenuRef.current) {
+      const menu = contextMenuRef.current;
+      const menuRect = menu.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      let x = contextMenuPosition.x;
+      let y = contextMenuPosition.y;
+
+      if (x + menuRect.width > vw) {
+        x = vw - menuRect.width - 8;
+      }
+      if (y + menuRect.height > vh) {
+        y = vh - menuRect.height - 8;
+      }
+      if (x < 0) x = 8;
+      if (y < 0) y = 8;
+
+      setAdjustedPosition({ x, y });
+    } else {
+      setAdjustedPosition(null);
+    }
+  }, [contextMenuOpen, contextMenuPosition]);
 
   // 清理长按计时器
   useEffect(() => {
@@ -66,8 +142,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
     if (isEditing) return;
     e.preventDefault();
     e.stopPropagation();
-    setMenuPosition({ x: e.clientX, y: e.clientY });
-    setShowMenu(true);
+    onContextMenu?.(novel.id, { x: e.clientX, y: e.clientY });
     setShowColorPicker(false);
   };
 
@@ -81,8 +156,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
       }
       // 显示菜单
       const touch = e.touches[0];
-      setMenuPosition({ x: touch.clientX, y: touch.clientY });
-      setShowMenu(true);
+      onContextMenu?.(novel.id, { x: touch.clientX, y: touch.clientY });
       setShowColorPicker(false);
     }, 500); // 500ms 长按
     setLongPressTimer(timer);
@@ -107,13 +181,18 @@ const NovelCard: React.FC<NovelCardProps> = ({
   const handleColorChange = (color: string) => {
     onColorChange(novel.id, color);
     setShowColorPicker(false);
-    setShowMenu(false);
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    onCategoryChange?.(novel.id, categoryId);
+    setShowCategoryPicker(false);
+    onCloseContextMenu?.();
   };
 
   const handleEdit = () => {
     setIsEditing(true);
-    setShowMenu(false);
     setShowColorPicker(false);
+    onCloseContextMenu?.();
   };
 
   const handleSaveEdit = () => {
@@ -155,10 +234,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
   };
 
   const handleDelete = () => {
-    if (confirm('确定要删除这本小说吗？')) {
-      onDelete(novel.id);
-    }
-    setShowMenu(false);
+    onDelete(novel.id);
   };
 
   const getStatusText = () => {
@@ -197,19 +273,36 @@ const NovelCard: React.FC<NovelCardProps> = ({
   return (
     <div
       className={viewMode === 'card' ? 'novel-card' : 'novel-list-item'}
+      onClick={handleCoverClick}
+      onContextMenu={handleContextMenu}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
     >
+      {/* 隐藏的文件输入 */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleCoverUpload}
+      />
+
       {/* 封面 */}
       <div
         className="novel-cover"
-        style={{ backgroundColor: novel.coverColor }}
-        onClick={handleCoverClick}
-        onContextMenu={handleContextMenu}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchMove={handleTouchMove}
+        style={{
+          backgroundColor: novel.coverColor,
+          backgroundImage: novel.coverImage ? `url(${novel.coverImage})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
       >
-        {!isEditing && (
+        {!isEditing && !novel.coverImage && (
           <div className="novel-cover-title">{novel.title}</div>
+        )}
+        {!isEditing && (
+          <span className={`cover-status-badge status-${novel.status}`}>{getStatusText()}</span>
         )}
         {isEditing && (
           <div className="edit-buttons" style={{ '--cover-color': novel.coverColor } as React.CSSProperties}>
@@ -221,18 +314,24 @@ const NovelCard: React.FC<NovelCardProps> = ({
       </div>
 
       {/* 右键菜单 */}
-      {showMenu && !isEditing && (
+      {contextMenuOpen && !isEditing && contextMenuPosition && (
         <div
           className="context-menu"
-          style={{ top: menuPosition.y, left: menuPosition.x }}
+          ref={contextMenuRef}
+          style={{ top: (adjustedPosition || contextMenuPosition).y, left: (adjustedPosition || contextMenuPosition).x }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="menu-item" onClick={() => setShowColorPicker(!showColorPicker)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.49 10 10-4.49 10-10 10zm0-18c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8z"/>
-              <circle cx="12" cy="12" r="5"/>
+            <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
+              <path d="M512 85.333333c235.605333 0 426.666667 169.728 426.666667 379.264a237.141333 237.141333 0 0 1-237.056 237.013334h-83.882667c-39.338667 0-71.125333 31.786667-71.125333 71.125333 0 18.005333 7.125333 34.602667 18.005333 46.933333 11.392 12.8 18.517333 29.397333 18.517333 47.872C583.125333 906.922667 550.4 938.666667 512 938.666667 276.394667 938.666667 85.333333 747.605333 85.333333 512S276.394667 85.333333 512 85.333333zM320 512a64 64 0 1 0 0-128 64 64 0 0 0 0 128z m384 0a64 64 0 1 0 0-128 64 64 0 0 0 0 128zM512 384a64 64 0 1 0 0-128 64 64 0 0 0 0 128z"/>
             </svg>
             颜色
+          </div>
+          <div className="menu-item" onClick={() => fileInputRef.current?.click()}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+            </svg>
+            上传封面
           </div>
           {showColorPicker && (
             <div className="color-picker-submenu">
@@ -247,6 +346,26 @@ const NovelCard: React.FC<NovelCardProps> = ({
                   />
                 ))}
               </div>
+            </div>
+          )}
+          <div className="menu-item" onClick={() => { setShowCategoryPicker(!showCategoryPicker); setShowColorPicker(false); }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.87L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 21.5h8v-8H3v8zm2-6h4v4H5v-4z"/>
+            </svg>
+            更改分类
+          </div>
+          {showCategoryPicker && (
+            <div className="category-picker-submenu">
+              <div className="category-picker-title">选择分类</div>
+              {[...categories].reverse().map(cat => (
+                <div
+                  key={cat.id}
+                  className={`category-option ${(novel.categoryId || 'default') === cat.id ? 'selected' : ''}`}
+                  onClick={() => handleCategoryChange(cat.id)}
+                >
+                  {cat.name}
+                </div>
+              ))}
             </div>
           )}
           <div className="menu-item" onClick={handleEdit}>
@@ -330,9 +449,9 @@ const NovelCard: React.FC<NovelCardProps> = ({
               <div className="tags-edit">
                 <div className="tags-list">
                   {editTags.map((tag, index) => (
-                    <span key={index} className="tag">
+                    <span key={index} className="tag editable-tag">
                       {tag}
-                      <span onClick={(e) => { e.stopPropagation(); removeTag(tag); }}>×</span>
+                      <button className="remove-tag-btn" onClick={(e) => { e.stopPropagation(); removeTag(tag); }}>×</button>
                     </span>
                   ))}
                 </div>
@@ -394,24 +513,18 @@ const NovelCard: React.FC<NovelCardProps> = ({
               <div className="card-view-content" key="card-view">
                 <div className="novel-title">{novel.title}</div>
                 <div className="novel-author">{novel.author || '未知作者'}</div>
-                <div className="novel-status-row">
-                  <div className="novel-status">
-                    <span className={`status-indicator status-${novel.status}`}></span>
-                    {getStatusText()}
-                  </div>
-                  <div className={`novel-reading-date ${novel.readingDate ? '' : 'empty'}`}>
-                    {novel.readingDate && (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight: '2px', verticalAlign: 'text-bottom' }}>
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="16" y1="2" x2="16" y2="6"></line>
-                          <line x1="8" y1="2" x2="8" y2="6"></line>
-                          <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        {novel.readingDate}
-                      </>
-                    )}
-                  </div>
+                <div className={`novel-reading-date ${novel.readingDate ? '' : 'empty'}`}>
+                  {novel.readingDate && (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight: '2px', verticalAlign: 'text-bottom' }}>
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      {novel.readingDate}
+                    </>
+                  )}
                 </div>
                 <div className="novel-rating">{renderStars()}</div>
                 <div className="novel-tags">

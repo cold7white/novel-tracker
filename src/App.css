@@ -1,8 +1,8 @@
 /* 主应用布局 */
 .app {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  min-height: 100vh;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
   background-color: var(--color-gray-50);
   font-family: var(--font-family);
   cursor: default;
@@ -51,7 +51,8 @@
   display: flex;
   flex-direction: column;
   padding: 20px var(--spacing-xl) 4px var(--spacing-xl);
-  height: 100vh;
+  flex-shrink: 0;
+  width: 250px;
   overflow: hidden;
 }
 
@@ -63,6 +64,7 @@
   flex-shrink: 0;
   height: auto;
   min-height: 50px;
+  margin-bottom: var(--spacing-md);
 }
 
 .sidebar-title {
@@ -114,7 +116,31 @@
 .category-list {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-bottom: var(--spacing-lg);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 自定义滚动条样式 */
+.category-list::-webkit-scrollbar,
+.content-scroll-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.category-list::-webkit-scrollbar-track,
+.content-scroll-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.category-list::-webkit-scrollbar-thumb,
+.content-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 3px;
+}
+
+.category-list::-webkit-scrollbar-thumb:hover,
+.content-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
 }
 
 .stats-btn-inline {
@@ -230,7 +256,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -305,18 +331,46 @@
   flex-direction: column;
   font-family: var(--font-family);
   cursor: default;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
 }
 
 /* 头部工具栏 */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-lg);
   background-color: var(--color-white);
   border-bottom: 1px solid var(--color-gray-200);
   min-height: 80px;
   font-family: var(--font-family);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  gap: var(--spacing-md);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-left: auto;
+}
+
+/* 内容区域包裹器 - 用于滚动 */
+.content-scroll-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 按钮样式 */
@@ -356,7 +410,7 @@
   border-color: var(--color-gray-600);
 }
 
-.header-controls {
+.header-filters {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
@@ -465,6 +519,12 @@
   gap: var(--spacing-xs);
 }
 
+.view-search-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
 .btn-icon {
   width: 42px;
   height: 42px;
@@ -512,11 +572,11 @@
   border-color: var(--color-gray-400);
 }
 
-/* 小说网格布局 */
+/* 书籍网格布局 */
 .novel-grid {
   padding: var(--spacing-xl);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: var(--spacing-lg);
   cursor: default;
 }
@@ -536,7 +596,7 @@
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  padding: var(--spacing-3xl);
+  padding: var(--spacing-3xl) var(--spacing-xl);
   color: var(--color-gray-400);
 }
 
@@ -548,8 +608,8 @@
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
-  .app {
-    grid-template-columns: 200px 1fr;
+  .sidebar {
+    width: 200px;
   }
 
   .header {
@@ -558,7 +618,7 @@
 
   .novel-grid {
     padding: var(--spacing-lg);
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
 
@@ -577,13 +637,13 @@
 /* 移动端横屏保持 */
 @media (max-width: 768px) and (orientation: landscape) {
   .novel-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .app {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .sidebar {
@@ -613,42 +673,86 @@
   /* 紧凑按钮样式 */
   .btn {
     padding: var(--spacing-compact-sm) var(--spacing-compact-md);
+    font-size: var(--font-size-xs);
+  }
+
+  .btn-primary {
+    padding: 6px 12px;
     font-size: var(--font-size-sm);
+    min-width: 100px;
+    white-space: nowrap;
   }
 
   .btn-icon {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
     padding: var(--spacing-compact-xs);
   }
 
   .btn-icon svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .dropdown-toggle {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-compact-sm) var(--spacing-compact-md);
+  }
+
+  .search-input {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-compact-sm) var(--spacing-compact-md);
   }
 
   /* Header优化 */
   .header {
-    flex-direction: row;
+    flex-wrap: nowrap;
     height: auto;
     min-height: auto;
     padding: var(--spacing-compact-md);
     gap: var(--spacing-compact-sm);
-    align-items: center;
+    align-items: flex-start;
   }
 
-  .header-controls {
-    flex-wrap: wrap;
-    width: auto;
-    justify-content: flex-end;
+  .header-left {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-compact-xs);
+  }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     margin-left: auto;
-    gap: var(--spacing-compact-sm);
+    gap: var(--spacing-compact-xs);
+    align-items: flex-end;
+  }
+
+  .header-filters {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-compact-xs);
+    flex-wrap: wrap;
+  }
+
+  .view-toggle {
+    flex-shrink: 0;
+  }
+
+  .view-search-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-compact-xs);
+    white-space: nowrap;
   }
 
   .search-input {
     padding: var(--spacing-compact-sm) var(--spacing-compact-md);
-    font-size: var(--font-size-sm);
-    width: 140px;
+    font-size: var(--font-size-xs);
+    width: auto;
+    max-width: 200px;
   }
 
   .novel-grid {
