@@ -709,9 +709,9 @@
     flex-wrap: nowrap;
     height: auto;
     min-height: auto;
-    padding: var(--spacing-compact-md);
+    padding: var(--spacing-compact-sm) var(--spacing-compact-md);
     gap: var(--spacing-compact-sm);
-    align-items: flex-start;
+    align-items: center;
   }
 
   .header-left {
@@ -719,6 +719,7 @@
     display: flex;
     flex-direction: row;
     gap: var(--spacing-compact-xs);
+    align-items: center;
   }
 
   .header-right {

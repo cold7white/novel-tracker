@@ -129,18 +129,15 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // 防止重复同步
     if (syncInProgressRef.current) {
-      console.log('Sync already in progress, skipping...');
       return;
     }
 
     // 检查是否是同一个用户，避免重复同步
     const currentUserId = user.id;
     if (lastSyncedUserRef.current === currentUserId) {
-      console.log('Already synced for this user, skipping...');
       return;
     }
 
-    console.log('Starting sync from Supabase...');
     syncInProgressRef.current = true;
     lastSyncedUserRef.current = currentUserId;
     try {
@@ -149,19 +146,6 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         novelQueries.getAll(),
         categoryQueries.getAll(),
       ]);
-      console.log('Fetched from Supabase:', novelsData.length, 'novels,', categoriesData.length, 'categories');
-
-      // 检查每个小说的 excerpts 字段
-      novelsData.forEach((n: any) => {
-        console.log(`📚 [Supabase] Novel "${n.title}":`, {
-          id: n.id,
-          excerpts: n.excerpts,
-          excerptsCount: Array.isArray(n.excerpts) ? n.excerpts.length : 0,
-          details: n.details,
-          detailsLength: n.details?.length || 0,
-          coverImage: n.cover_image
-        });
-      });
 
       // 转换数据格式
       const transformedNovels: Novel[] = novelsData.map(n => ({
