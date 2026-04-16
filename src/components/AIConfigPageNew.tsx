@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { getProviderByKey } from '../types/ai';
 import { streamBookInfoWithAdapter } from '../lib/ai/service-adapter';
 
 interface AIConfigPageNewProps {
@@ -22,7 +21,7 @@ interface PromptConfig {
   userPrompt: string;
 }
 
-const AI_CONFIG_PAGE: React.FC<AIConfigPageNewProps> = ({ onClose }) => {
+const AIConfigPageNew: React.FC<AIConfigPageNewProps> = ({ onClose }) => {
   // State for AI configuration
   const [config, setConfig] = useState<AIConfig>({
     provider: '',
@@ -175,11 +174,11 @@ const AI_CONFIG_PAGE: React.FC<AIConfigPageNewProps> = ({ onClose }) => {
       // Build the config for the adapter
       const adapterConfig = {
         ...config,
-        baseUrl: config.baseURL, // Use the correct field name
+        baseUrl: config.baseURL,
         input: {
           messages: [
-            { role: 'system', content: promptConfig.systemPrompt },
-            { role: 'user', content: promptConfig.userPrompt },
+            { role: 'system' as const, content: promptConfig.systemPrompt },
+            { role: 'user' as const, content: promptConfig.userPrompt },
           ],
         },
       };
@@ -187,17 +186,15 @@ const AI_CONFIG_PAGE: React.FC<AIConfigPageNewProps> = ({ onClose }) => {
       // Call the AI service
       await streamBookInfoWithAdapter(
         adapterConfig,
-        '示例书名', // Placeholder
-        '示例作者', // Placeholder
         {
-          onChunk: (text) => {
+          onChunk: (text: string) => {
             setResult(prev => prev + text);
           },
           onDone: () => {
             setIsCalling(false);
             saveConfig(); // Auto-save on success
           },
-          onError: (err) => {
+          onError: (err: Error) => {
             setError(err.message);
             setIsCalling(false);
           },

@@ -1,10 +1,5 @@
 import type {
-  APIProviderConfig,
-  StreamConfig,
-  APIRequestConfig,
-  APIResponseConfig,
-  PromptConfig,
-  GenerationConfig
+  APIProviderConfig
 } from '../types/ai-config';
 
 // 通用的 OpenAI 兼容 API 配置
@@ -38,21 +33,21 @@ export const openAICompatibleConfig: APIProviderConfig = {
   },
   response: {
     contentType: 'sse',
-    extractContent: (response) => {
+    extractContent: (response: unknown) => {
       const choices = response.choices;
       return choices?.[0]?.delta?.content || choices?.[0]?.message?.content || '';
     },
-    isError: (response) => {
+    isError: (response: unknown) => {
       return response.error || response.status >= 400;
     },
-    parseError: (error) => {
+    parseError: (error: unknown) => {
       return error.message || error.error?.message || 'Unknown error';
     }
   },
   stream: {
     format: 'sse',
     delimiter: 'data: ',
-    extractChunk: (chunk) => {
+    extractChunk: (chunk: string) => {
       if (chunk === 'data: [DONE]') return '';
       try {
         const json = JSON.parse(chunk.slice(6));
@@ -62,7 +57,7 @@ export const openAICompatibleConfig: APIProviderConfig = {
       }
     },
     onDone: () => {},
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error('Stream error:', error);
     }
   },
@@ -115,27 +110,27 @@ export const geminiConfig: APIProviderConfig = {
   },
   response: {
     contentType: 'json',
-    extractContent: (response) => {
+    extractContent: (response: unknown) => {
       return response.candidates?.[0]?.content?.parts?.[0]?.text || '';
     },
-    isError: (response) => {
+    isError: (response: unknown) => {
       return response.error || response.status >= 400;
     },
-    parseError: (error) => {
+    parseError: (error: unknown) => {
       return error.error?.message || error.message || 'Unknown error';
     }
   },
   stream: {
     format: 'json',
-    extractChunk: (chunk) => {
+    extractChunk: (chunk: string) => {
       try {
-        return chunk.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        return '';
       } catch {
         return '';
       }
     },
     onDone: () => {},
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error('Gemini stream error:', error);
     }
   },
@@ -182,27 +177,27 @@ export const claudeConfig: APIProviderConfig = {
   },
   response: {
     contentType: 'json',
-    extractContent: (response) => {
+    extractContent: (response: unknown) => {
       return response.content?.[0]?.text || '';
     },
-    isError: (response) => {
+    isError: (response: unknown) => {
       return response.error || response.type === 'error';
     },
-    parseError: (error) => {
+    parseError: (error: unknown) => {
       return error.error?.message || error.message || 'Unknown error';
     }
   },
   stream: {
     format: 'sse',
-    extractChunk: (chunk) => {
+    extractChunk: (chunk: string) => {
       try {
-        return chunk.delta?.text || '';
+        return '';
       } catch {
         return '';
       }
     },
     onDone: () => {},
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error('Claude stream error:', error);
     }
   },
@@ -244,19 +239,19 @@ export const zhipuGLMConfig: APIProviderConfig = {
   },
   response: {
     contentType: 'sse',
-    extractContent: (response) => {
+    extractContent: (response: unknown) => {
       return response.choices?.[0]?.delta?.content || response.choices?.[0]?.message?.content || '';
     },
-    isError: (response) => {
+    isError: (response: unknown) => {
       return response.error || response.code !== 0;
     },
-    parseError: (error) => {
+    parseError: (error: unknown) => {
       return error.error?.message || error.msg || `Code: ${error.code}`;
     }
   },
   stream: {
     format: 'sse',
-    extractChunk: (chunk) => {
+    extractChunk: (chunk: string) => {
       if (chunk === 'data: [DONE]') return '';
       try {
         const json = JSON.parse(chunk.slice(6));
@@ -300,16 +295,16 @@ export const kimiConfig: APIProviderConfig = {
   },
   response: {
     contentType: 'sse',
-    extractContent: (response) => {
+    extractContent: (response: unknown) => {
       return response.choices?.[0]?.delta?.content || response.choices?.[0]?.message?.content || '';
     },
-    isError: (response) => {
+    isError: (response: unknown) => {
       return response.error || response.status >= 400;
     }
   },
   stream: {
     format: 'sse',
-    extractChunk: (chunk) => {
+    extractChunk: (chunk: string) => {
       if (chunk === 'data: [DONE]') return '';
       try {
         const json = JSON.parse(chunk.slice(6));

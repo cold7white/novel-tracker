@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import type { ReadingSession, ReadingStatus } from '../types/novel';
 import { generateId } from '../utils/generateId';
 import DatePicker from './DatePicker';

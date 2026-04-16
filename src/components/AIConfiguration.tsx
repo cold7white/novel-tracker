@@ -78,11 +78,11 @@ export default function AIConfiguration({ onClose }: AIConfigurationProps) {
       // Prepare the configuration
       const requestConfig = {
         ...config,
-        baseUrl: config.baseURL, // Correct field name for adapter
+        baseUrl: config.baseURL,
         input: {
           messages: [
-            { role: 'system', content: promptConfig.systemPrompt },
-            { role: 'user', content: promptConfig.userPrompt },
+            { role: 'system' as const, content: promptConfig.systemPrompt },
+            { role: 'user' as const, content: promptConfig.userPrompt },
           ],
         },
       };
@@ -93,16 +93,14 @@ export default function AIConfiguration({ onClose }: AIConfigurationProps) {
       // Call the AI with streaming
       await streamBookInfoWithAdapter(
         requestConfig,
-        '', // Title placeholder
-        '', // Author placeholder
         {
-          onChunk: (text) => {
+          onChunk: (text: string) => {
             setResult(prev => prev + text);
           },
           onDone: () => {
             setIsCalling(false);
           },
-          onError: (err) => {
+          onError: (err: Error) => {
             setError(err.message);
             setIsCalling(false);
           },

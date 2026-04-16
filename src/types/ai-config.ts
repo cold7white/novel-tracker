@@ -107,6 +107,21 @@ export interface AIConfig {
     retryAttempts: number;
     debug: boolean;
   };
+
+  // 适配器所需字段
+  apiKey?: string;
+  baseUrl?: string;
+  model?: string;
+  generation?: GenerationConfig;
+  request_template?: any;
+
+  // 新增字段以支持适配器配置
+  provider?: string;
+  baseURL?: string;
+  temperature?: number;
+  top_p?: number;
+  maxTokens?: number;
+  stream?: boolean;
 }
 
 // 配置预设

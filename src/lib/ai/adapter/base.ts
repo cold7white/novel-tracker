@@ -1,4 +1,4 @@
-import { AIAdapter, AIAdapterConfig, AIResponse } from './interface';
+import type { AIAdapter, AIAdapterConfig, AIResponse } from './interface';
 
 export abstract class BaseAdapter implements AIAdapter {
   abstract buildHeaders(config: AIAdapterConfig): Record<string, string>;

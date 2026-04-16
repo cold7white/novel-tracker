@@ -7,8 +7,8 @@ type NovelUpdate = Database['public']['Tables']['novels']['Update']
 type CategoryInsert = Database['public']['Tables']['categories']['Insert']
 type CategoryUpdate = Database['public']['Tables']['categories']['Update']
 
-type UserSettingsInsert = Database['public']['Tables']['user_settings']['Insert']
-type UserSettingsUpdate = Database['public']['Tables']['user_settings']['Update']
+// type UserSettingsInsert = Database['public']['Tables']['user_settings']['Insert']
+// type UserSettingsUpdate = Database['public']['Tables']['user_settings']['Update']
 
 // Helper function to ensure supabase is available
 const getSupabase = () => {

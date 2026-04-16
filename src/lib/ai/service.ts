@@ -111,6 +111,8 @@ export function isOpenAICompatible(apiUrl: string): boolean {
   return !isGeminiProvider(apiUrl) && !isClaudeProvider(apiUrl);
 }
 
+export { isGeminiModel, isGeminiProvider, isClaudeProvider };
+
 // 获取 AI 配置（优先 localStorage，fallback 环境变量）
 function getAIConfig(): AISettings {
   try {

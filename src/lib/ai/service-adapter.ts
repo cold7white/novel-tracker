@@ -1,5 +1,5 @@
-import { getAdapter, ProviderType } from './adapter/factory';
-import type { AIAdapterConfig, AIMessage, AIResponse } from './adapter/interface';
+import { getAdapter } from './adapter/factory';
+import type { AIAdapterConfig, AIMessage } from './adapter/interface';
 
 // Updated AI service using the adapter pattern
 
@@ -125,9 +125,9 @@ function buildDefaultPrompt(title?: string, author?: string): AIMessage[] {
 // Unified streaming function using adapters
 export async function streamBookInfoWithAdapter(
   config: AIConfig,
+  callbacks: StreamCallbacks,
   title?: string,
   author?: string,
-  callbacks: StreamCallbacks,
   signal?: AbortSignal
 ): Promise<void> {
   try {

@@ -1,16 +1,16 @@
-import { AIAdapter } from './interface';
+import type { AIAdapter, AIAdapterConfig } from './interface';
 import { OpenAIAdapter } from './openai';
 import { ClaudeAdapter } from './claude';
 import { GeminiAdapter } from './gemini';
 import { CustomAdapter } from './custom';
-import { AIAdapterConfig } from './interface';
 
-export enum ProviderType {
-  OpenAICompatible = 'openai-compatible',
-  Claude = 'claude',
-  Gemini = 'gemini',
-  Custom = 'custom',
-}
+export const ProviderType = {
+  OpenAICompatible: 'openai-compatible',
+  Claude: 'claude',
+  Gemini: 'gemini',
+  Custom: 'custom',
+} as const;
+export type ProviderType = typeof ProviderType[keyof typeof ProviderType];
 
 export function getAdapter(config: AIAdapterConfig): AIAdapter {
   const { baseUrl, model } = config;

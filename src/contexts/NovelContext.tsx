@@ -743,9 +743,9 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       updateExcerpt,
       deleteExcerpt,
       getExcerpts,
-      syncAISettingsToCloud: (settings) => {
+      syncAISettingsToCloud: async (settings) => {
       if (user) {
-        syncAISettingsToSupabase(user.id, settings);
+        await syncAISettingsToSupabase(user.id, settings);
       }
       // 同时保存到 localStorage 以确保持久化
       saveAISettings(settings);

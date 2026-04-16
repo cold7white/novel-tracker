@@ -1,5 +1,5 @@
 import { BaseAdapter } from './base';
-import { AIAdapterConfig, AIMessage, RequestTemplate } from './interface';
+import type { AIAdapterConfig, AIMessage, RequestTemplate } from './interface';
 
 export class CustomAdapter extends BaseAdapter {
   buildHeaders(config: AIAdapterConfig): Record<string, string> {
@@ -69,8 +69,9 @@ export class CustomAdapter extends BaseAdapter {
   }
 
   async parseResponse(response: Response): Promise<any> {
-    const template = response.config.data ? JSON.parse(response.config.data).request_template : null;
-    const path = template?.content_path || 'text';
+    // Custom adapter doesn't have access to request_template in response
+    // Use default path
+    const path = 'text';
 
     if (response.body) {
       // Check if the response has readable stream
@@ -99,8 +100,9 @@ export class CustomAdapter extends BaseAdapter {
   }
 
   async parseStreamResponse(response: Response, onChunk: (chunk: string) => void): Promise<void> {
-    const template = response.config.data ? JSON.parse(response.config.data).request_template : null;
-    const path = template?.delta_path || template?.content_path || '';
+    // Custom adapter doesn't have access to request_template in response
+    // Use default path
+    const path = '';
 
     if (response.body) {
       const reader = response.body.getReader();

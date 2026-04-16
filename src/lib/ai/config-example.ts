@@ -35,25 +35,29 @@ const customConfig = {
       },
       response: {
         contentType: 'json',
-        extractContent: (response) => {
+        extractContent: (response: unknown) => {
           // 自定义响应解析逻辑
-          return response.data?.content || response.result?.text || '';
+          return response && typeof response === 'object' && 'data' in response ? (response as any).data?.content :
+                 response && typeof response === 'object' && 'result' in response ? (response as any).result?.text : '';
         },
-        isError: (response) => {
-          return response.error || response.code !== 200;
+        isError: (response: unknown) => {
+          return response && typeof response === 'object' && 'error' in response ? (response as any).error :
+                 response && typeof response === 'object' && 'code' in response ? (response as any).code !== 200 : false;
         },
-        parseError: (error) => {
-          return error.message || `Error: ${error.code}`;
+        parseError: (error: unknown) => {
+          return error && typeof error === 'object' && 'message' in error ? (error as any).message :
+                 error && typeof error === 'object' && 'code' in error ? `Error: ${(error as any).code}` : 'Unknown error';
         }
       },
       stream: {
         format: 'sse',
-        extractChunk: (chunk) => {
+        extractChunk: (chunk: string) => {
           // 自定义流式响应解析
           if (chunk === 'data: [DONE]') return '';
           try {
             const json = JSON.parse(chunk.slice(6));
-            return json.data?.content || json.result?.text || '';
+            return json && typeof json === 'object' && 'data' in json ? (json as any).data?.content :
+                   json && typeof json === 'object' && 'result' in json ? (json as any).result?.text : '';
           } catch {
             return '';
           }
@@ -124,19 +128,19 @@ const modifiedConfig = {
       // 修改响应解析
       response: {
         contentType: 'sse',
-        extractContent: (response) => {
+        extractContent: (response: unknown) => {
           return response.choices?.[0]?.delta?.content ||
                  response.choices?.[0]?.message?.content ||
                  response.content || '';
         },
-        isError: (response) => {
+        isError: (response: unknown) => {
           return response.error || response.status >= 400;
         }
       },
       // 修改流式处理
       stream: {
         format: 'sse',
-        extractChunk: (chunk) => {
+        extractChunk: (chunk: string) => {
           if (chunk === 'data: [DONE]') return '';
           try {
             const json = JSON.parse(chunk.slice(6));
@@ -216,16 +220,16 @@ const newProviderConfig = {
       },
       response: {
         contentType: 'json',
-        extractContent: (response) => {
+        extractContent: (response: unknown) => {
           return response.text || '';
         },
-        isError: (response) => {
+        isError: (response: unknown) => {
           return response.error || response.message;
         }
       },
       stream: {
         format: 'sse',
-        extractChunk: (chunk) => {
+        extractChunk: (chunk: string) => {
           if (chunk === 'data: [DONE]') return '';
           try {
             const json = JSON.parse(chunk.slice(6));

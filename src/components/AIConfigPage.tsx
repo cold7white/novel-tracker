@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AI_PROVIDERS, getProviderByKey } from '../types/ai';
 import { saveFullAISettings, getFullAISettings } from '../lib/ai/service';
-import { ProviderType } from '../lib/ai/adapter/factory';
 
 interface AIConfigPageProps {
   onClose: () => void;
@@ -74,7 +73,7 @@ const DEFAULT_PROMPTS = {
   user: `请为《{{书名}}》（作者：{{作者名}}）生成书籍信息`,
 };
 
-const AI_CONFIG_PAGE: React.FC<AIConfigPageProps> = ({ onClose, onSave }) => {
+const AIConfigPage: React.FC<AIConfigPageProps> = ({ onClose, onSave }) => {
   const [formState, setFormState] = useState<AIFormState>({
     providerType: 'select',
     selectedProvider: 'custom',
@@ -99,7 +98,6 @@ const AI_CONFIG_PAGE: React.FC<AIConfigPageProps> = ({ onClose, onSave }) => {
   });
 
   const [models, setModels] = useState<any[]>([]);
-  const [savedConfigs, setSavedConfigs] = useState<any[]>([]);
 
   // Load saved configurations on mount
   useEffect(() => {

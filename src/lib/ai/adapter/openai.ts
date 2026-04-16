@@ -1,5 +1,5 @@
 import { BaseAdapter } from './base';
-import { AIAdapterConfig, AIMessage, RequestTemplate } from './interface';
+import type { AIAdapterConfig, AIMessage, RequestTemplate } from './interface';
 
 export class OpenAIAdapter extends BaseAdapter {
   buildHeaders(config: AIAdapterConfig): Record<string, string> {

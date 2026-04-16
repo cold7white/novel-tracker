@@ -1,21 +1,15 @@
 // AI 服务 V2 - 基于配置驱动的 API 客户端
 // 支持通过配置代码自定义任何 API 请求结构
 
-import type { AISettings } from '../types/ai';
 import type {
-  APIProviderConfig,
-  StreamConfig,
-  PromptConfig,
-  AIConfig
+  APIProviderConfig
 } from '../types/ai-config';
 import {
   getAIConfigWithCode,
   getCurrentConfig,
   buildRequest,
   processStreamResponse,
-  parseResponse,
-  isResponseError,
-  parseErrorResponse
+  parseResponse
 } from './config-client';
 
 const AI_SETTINGS_KEY = 'ai-settings';

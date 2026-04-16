@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { type AISettings } from '../types/ai';
 import { saveFullAISettings, getFullAISettings } from '../lib/ai/service';
 import { getConfigCode, saveConfigCode } from '../lib/ai/config-client';
-import { API_CONFIG_PRESETS } from '../lib/ai/config-presets';
-import { customConfig, modifiedConfig, newProviderConfig } from '../lib/ai/config-example';
 import { openAICompatibleConfig, geminiConfig, claudeConfig, zhipuGLMConfig, kimiConfig } from '../lib/ai/config-presets';
 import './AISettingsModal.css';
 
@@ -497,9 +495,9 @@ const AISettingsModal: React.FC<AISettingsModalProps> = ({ onClose, onSave, titl
                       <button
                         className="preset-card"
                         onClick={() => {
-                          const configStr = JSON.stringify(modifiedConfig, null, 2);
+                          const configStr = JSON.stringify(openAICompatibleConfig, null, 2);
                           setConfigCode(configStr);
-                          alert('已加载自定义配置示例');
+                          alert('已加载OpenAI兼容配置示例');
                         }}
                       >
                         <div className="preset-header">

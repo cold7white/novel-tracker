@@ -1,8 +1,8 @@
 import { BaseAdapter } from './base';
-import { AIAdapterConfig, AIMessage, RequestTemplate } from './interface';
+import type { AIAdapterConfig, AIMessage, RequestTemplate } from './interface';
 
 export class GeminiAdapter extends BaseAdapter {
-  buildHeaders(config: AIAdapterConfig): Record<string, string> {
+  buildHeaders(_config: AIAdapterConfig): Record<string, string> {
     return {
       'Content-Type': 'application/json',
     };

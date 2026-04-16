@@ -1,11 +1,19 @@
 import type {
   APIProviderConfig,
-  APIRequestConfig,
   StreamConfig,
   PromptConfig,
-  AIConfig
+  AIConfig,
+  APIResponseConfig
 } from '../types/ai-config';
-import type { AISettings } from '../types/ai';
+
+// 导入默认配置
+import {
+  openAICompatibleConfig,
+  geminiConfig,
+  claudeConfig,
+  zhipuGLMConfig,
+  kimiConfig
+} from './config-presets';
 
 // 配置缓存
 let configCache: AIConfig | null = null;
@@ -47,12 +55,19 @@ function executeConfigCode(code: string): AIConfig {
   const exports = {};
 
   // 限制可用的模块
-  const require = (module: string) => {
+  const require = (module: string): Record<string, unknown> => {
     if (module === './config-presets') {
       // 导入预设配置
+      const presets = {
+        openAICompatibleConfig,
+        geminiConfig,
+        claudeConfig,
+        zhipuGLMConfig,
+        kimiConfig
+      };
       return {
-        API_CONFIG_PRESETS: require('../ai/config-presets').API_CONFIG_PRESETS,
-        findConfigPreset: require('../ai/config-presets').findConfigPreset
+        API_CONFIG_PRESETS: presets,
+        findConfigPreset: (id: string) => (presets as any)[id]
       };
     }
     throw new Error(`模块 "${module}" 不允许在配置代码中使用`);
@@ -79,7 +94,7 @@ function validateConfig(config: AIConfig): void {
   }
 
   // 验证每个提供商配置
-  config.providers.forEach(provider => {
+  config.providers.forEach((provider: APIProviderConfig) => {
     if (!provider.id || !provider.name || !provider.request || !provider.response) {
       throw new Error(`提供商 "${provider.id}" 缺少必要的字段`);
     }
@@ -114,13 +129,13 @@ export function getCurrentConfig(): APIProviderConfig | null {
   }
 
   // 查找对应的配置
-  const providerConfig = configCode.providers.find(p =>
+  const providerConfig = configCode.providers.find((p: APIProviderConfig) =>
     p.id === fullConfig.provider || p.name === fullConfig.provider
   );
 
   if (!providerConfig) {
     // 如果没有找到，使用默认的 OpenAI 兼容配置
-    const defaultConfig = require('./config-presets').openAICompatibleConfig;
+    const defaultConfig = openAICompatibleConfig;
     if (fullConfig.customConfig) {
       return {
         ...defaultConfig,
@@ -232,7 +247,7 @@ function buildPrompt(title: string, author: string, promptConfig: PromptConfig):
 
   if (promptConfig.messages) {
     // 使用自定义消息格式
-    return promptConfig.messages.map(msg => ({
+    return promptConfig.messages.map((msg: { role: string; content: string }) => ({
       role: msg.role,
       content: replacePlaceholders(msg.content, placeholders)
     }));
@@ -345,25 +360,25 @@ export async function* processStreamResponse(
 }
 
 // 解析响应
-export function parseResponse(response: any, responseConfig: APIResponseConfig): string {
-  if (responseConfig.extractContent) {
-    return responseConfig.extractContent(response);
+export function parseResponse(response: unknown, responseConfig: APIProviderConfig): string {
+  if (responseConfig.response && responseConfig.response.extractContent) {
+    return responseConfig.response.extractContent(response);
   }
   return '';
 }
 
 // 检查是否为错误
-export function isResponseError(response: any, responseConfig: APIResponseConfig): boolean {
-  if (responseConfig.isError) {
-    return responseConfig.isError(response);
+export function isResponseError(response: any, responseConfig: APIProviderConfig): boolean {
+  if (responseConfig.response && responseConfig.response.isError) {
+    return responseConfig.response.isError(response);
   }
   return false;
 }
 
 // 解析错误信息
-export function parseErrorResponse(error: any, responseConfig: APIResponseConfig): string {
-  if (responseConfig.parseError) {
-    return responseConfig.parseError(error);
+export function parseErrorResponse(error: any, responseConfig: APIProviderConfig): string {
+  if (responseConfig.response && responseConfig.response.parseError) {
+    return responseConfig.response.parseError(error);
   }
   return error.message || 'Unknown error';
 }
