@@ -2,8 +2,7 @@ import type {
   APIProviderConfig,
   StreamConfig,
   PromptConfig,
-  AIConfig,
-  APIResponseConfig
+  AIConfig
 } from '../types/ai-config';
 
 // 导入默认配置
@@ -211,7 +210,7 @@ export function buildRequest(
   const params: URLSearchParams = new URLSearchParams();
   if (config.request.params) {
     Object.entries(config.request.params).forEach(([key, value]) => {
-      params.append(key, value);
+      params.append(key, String(value));
     });
   }
 

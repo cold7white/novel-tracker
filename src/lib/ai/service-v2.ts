@@ -4,6 +4,7 @@
 import type {
   APIProviderConfig
 } from '../types/ai-config';
+import type { AISettings } from '../types/ai';
 import {
   getAIConfigWithCode,
   getCurrentConfig,
