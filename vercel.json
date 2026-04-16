@@ -9,7 +9,7 @@
       }
     }
   ],
-  "functions": [],
+  "functions": {},
   "installCommand": "cd novel-tracker && npm ci",
   "buildCommand": "cd novel-tracker && npm run build",
   "outputDirectory": "novel-tracker/dist"
