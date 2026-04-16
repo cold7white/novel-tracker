@@ -1,0 +1,267 @@
+/* AI Configuration Page Styles */
+.ai-config-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.ai-config-modal {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.ai-config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ai-config-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.ai-config-body {
+  padding: 24px;
+}
+
+.config-section {
+  margin-bottom: 32px;
+}
+
+.config-section:last-child {
+  margin-bottom: 0;
+}
+
+.config-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.provider-select {
+  margin-bottom: 24px;
+}
+
+.form-select,
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.form-select:focus,
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-group label input[type="range"] {
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.form-range {
+  width: 100%;
+  margin: 8px 0;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  outline: none;
+}
+
+.form-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-range::-webkit-slider-thumb:hover {
+  background: #2563eb;
+}
+
+.toggle-advanced {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-advanced:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.advanced-config {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.advanced-config .form-group {
+  margin-bottom: 12px;
+}
+
+.ai-config-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.test-btn,
+.cancel-btn,
+.save-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.test-btn {
+  background: #6366f1;
+  color: white;
+}
+
+.test-btn:hover {
+  background: #4f46e5;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.save-btn {
+  background: #10b981;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #059669;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ai-config-modal {
+    max-width: 95vw;
+  }
+
+  .ai-config-header,
+  .ai-config-body,
+  .ai-config-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .ai-config-footer {
+    flex-wrap: wrap;
+  }
+
+  .ai-config-footer .btn {
+    flex: 1;
+    min-width: 100px;
+  }
+}
+
+/* Scrollbar Styling */
+.ai-config-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ai-config-modal::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.ai-config-modal::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+.ai-config-modal::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

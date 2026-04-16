@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
-import type { Novel, CreateNovelInput, UpdateNovelInput } from '../types/novel';
+import type { Novel, CreateNovelInput, UpdateNovelInput, ReadingSession } from '../types/novel';
 import type { Category } from '../types/category';
 import type { Excerpt, CreateExcerptInput, UpdateExcerptInput } from '../types/excerpt';
+import type { AISettings } from '../types/ai';
 import { generateId } from '../utils/generateId';
 import { useAuth } from './AuthContext';
 import { supabase, isSupabaseConfigured } from '../lib/supabase/client';
-import { novelQueries, categoryQueries } from '../lib/supabase/queries';
+import { novelQueries, categoryQueries, userSettingsQueries } from '../lib/supabase/queries';
+import { loadAISettings, saveAISettings } from '../lib/ai/service';
 
 interface NovelContextType {
   novels: Novel[];
@@ -26,9 +28,21 @@ interface NovelContextType {
   updateExcerpt: (novelId: string, excerptId: string, updates: UpdateExcerptInput) => Promise<void>;
   deleteExcerpt: (novelId: string, excerptId: string) => Promise<void>;
   getExcerpts: (novelId: string) => Excerpt[];
+  syncAISettingsToCloud: (settings: AISettings) => Promise<void>;
 }
 
 const NovelContext = createContext<NovelContextType | undefined>(undefined);
+
+// 迁移旧数据：readingDate → readingSessions
+function migrateReadingSessions(n: any): ReadingSession[] {
+  if (n.readingSessions && n.readingSessions.length > 0) {
+    return n.readingSessions;
+  }
+  if (n.readingDate && n.readingDate.trim() !== '') {
+    return [{ id: generateId(), startDate: n.readingDate }];
+  }
+  return [];
+}
 
 export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
@@ -38,11 +52,12 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const saved = localStorage.getItem('novels');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // 转换日期字符串回Date对象
+      // 转换日期字符串回Date对象，并迁移 readingDate → readingSessions
       return parsed.map((n: any) => ({
         ...n,
         createdAt: new Date(n.createdAt),
         updatedAt: new Date(n.updatedAt),
+        readingSessions: migrateReadingSessions(n),
         excerpts: (n.excerpts || []).map((e: any) => ({
           ...e,
           createdAt: new Date(e.createdAt),
@@ -156,7 +171,7 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         rating: n.rating || 0,
         tags: n.tags || [],
         details: n.details || '',
-        readingDate: n.reading_date || undefined,
+        readingSessions: (n.reading_sessions as ReadingSession[]) || [],
         coverColor: n.cover_color,
         coverImage: n.cover_image || undefined,
         createdAt: new Date(n.created_at),
@@ -205,24 +220,12 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         );
       })();
 
-      // 检查合并后的数据
-      console.log('🔍 [Merge] Merged novels data:');
-      mergedNovels.forEach(novel => {
-        console.log(`  - "${novel.title}":`, {
-          excerptsCount: novel.excerpts?.length || 0,
-          detailsLength: novel.details?.length || 0,
-          hasCoverImage: !!novel.coverImage
-        });
-      });
-
       // 检查是否有本地数据需要上传到 Supabase
       const supabaseIds = new Set(transformedNovels.map(n => n.id));
       const supabaseTitles = new Set(transformedNovels.map(n => n.title.toLowerCase()));
       const localOnlyNovels = mergedNovels.filter(n => !supabaseIds.has(n.id) && !supabaseTitles.has(n.title.toLowerCase()));
 
       if (localOnlyNovels.length > 0) {
-        console.log('Local novels not in Supabase:', localOnlyNovels.map(n => ({ id: n.id, title: n.title })));
-        console.log(`Uploading ${localOnlyNovels.length} local novels to Supabase...`);
         for (const novel of localOnlyNovels) {
           try {
             const novelData = {
@@ -233,7 +236,7 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
               rating: novel.rating || 0,
               tags: novel.tags || [],
               details: novel.details || null,
-              reading_date: novel.readingDate && novel.readingDate !== '' ? novel.readingDate : null,
+              reading_sessions: novel.readingSessions || [],
               cover_color: novel.coverColor || '#3b82f6',
               cover_image: novel.coverImage || null,
               category_id: novel.categoryId && novel.categoryId !== 'default' ? novel.categoryId : null,
@@ -243,9 +246,7 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 updatedAt: e.updatedAt instanceof Date ? e.updatedAt.toISOString() : e.updatedAt
               })),
             };
-            console.log('Uploading novel:', novelData);
             const result = await novelQueries.create(novelData);
-            console.log(`Successfully uploaded "${novel.title}" to Supabase with ID:`, result?.id);
 
             // 使用 Supabase 返回的数据更新本地 novel（包含新的 UUID）
             if (result) {
@@ -257,7 +258,7 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 rating: result.rating || 0,
                 tags: result.tags || [],
                 details: result.details || '',
-                readingDate: result.reading_date || undefined,
+                readingSessions: (result.reading_sessions as ReadingSession[]) || [],
                 coverColor: result.cover_color,
                 coverImage: result.cover_image || undefined,
                 createdAt: new Date(result.created_at),
@@ -267,7 +268,6 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
               // 更新 mergedNovels 中的数据
               const index = mergedNovels.findIndex(n => n.id === novel.id);
               if (index !== -1) {
-                console.log(`Updating local novel ID from ${novel.id} to ${result.id}`);
                 mergedNovels[index] = updatedNovel;
               }
             }
@@ -279,7 +279,6 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           }
         }
       } else {
-        console.log('No local novels to upload, all already in Supabase');
       }
 
       setNovels(mergedNovels);
@@ -319,14 +318,12 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       );
 
       if (localOnlyCategories.length > 0) {
-        console.log(`Uploading ${localOnlyCategories.length} local categories to Supabase...`);
         for (const category of localOnlyCategories) {
           try {
-            const result = await categoryQueries.create({
+            await categoryQueries.create({
               user_id: user.id,
               name: category.name,
             });
-            console.log(`Successfully uploaded category "${category.name}" to Supabase with ID:`, result?.id);
           } catch (err) {
             console.error(`Failed to upload category "${category.name}" to Supabase:`, err);
           }
@@ -339,7 +336,34 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } finally {
       setSyncing(false);
       syncInProgressRef.current = false;
-      console.log('Sync completed');
+    }
+  };
+
+  // 从 Supabase 同步 AI 设置
+  const syncAISettingsFromSupabase = async (userId: string) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const data = await userSettingsQueries.get(userId);
+      if (data?.ai_settings && Object.keys(data.ai_settings).length > 0) {
+        const remoteSettings = data.ai_settings as unknown as AISettings;
+        const localSettings = loadAISettings();
+        // 优先使用有 API Key 的那一端
+        if (!localSettings?.apiKey && remoteSettings.apiKey) {
+          saveAISettings(remoteSettings);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to sync AI settings:', error);
+    }
+  };
+
+  // 同步 AI 设置到 Supabase
+  const syncAISettingsToSupabase = async (userId: string, settings: AISettings) => {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      await userSettingsQueries.upsert(userId, settings as unknown as Record<string, unknown>);
+    } catch (error) {
+      console.error('Failed to sync AI settings to Supabase:', error);
     }
   };
 
@@ -352,6 +376,8 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     if (user) {
       syncFromSupabase();
+      // 同步 AI 设置
+      syncAISettingsFromSupabase(user.id);
     } else if (prevUser && !user) {
       // 用户主动退出登录，清空数据
       setNovels([]);
@@ -384,7 +410,7 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           rating: novel.rating || 0,
           tags: novel.tags || [],
           details: novel.details || null,
-          reading_date: novel.readingDate && novel.readingDate !== '' ? novel.readingDate : null,
+          reading_sessions: novel.readingSessions || [],
           cover_color: novel.coverColor || '#3b82f6',
           cover_image: novel.coverImage || null,
           category_id: novel.categoryId && novel.categoryId !== 'default' ? novel.categoryId : null,
@@ -399,8 +425,6 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const updateNovel = async (id: string, updates: UpdateNovelInput) => {
     // 获取当前书籍数据，用于同步到Supabase
     const currentNovel = novels.find(n => n.id === id);
-
-    console.log('📝 [updateNovel] Updating novel:', { id, updates, currentNovelExcerpts: currentNovel?.excerpts });
 
     // 更新本地状态
     setNovels(prev => prev.map(novel =>
@@ -420,14 +444,15 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         if (updates.rating !== undefined) updateData.rating = updates.rating || 0;
         if (updates.tags !== undefined) updateData.tags = updates.tags || [];
         if (updates.details !== undefined) updateData.details = updates.details;
-        if (updates.readingDate !== undefined) {
-          updateData.reading_date = (updates.readingDate && updates.readingDate !== '') ? updates.readingDate : null;
+        if (updates.readingSessions !== undefined) {
+          updateData.reading_sessions = updates.readingSessions || [];
         }
         if (updates.coverColor !== undefined) updateData.cover_color = updates.coverColor || '#3b82f6';
         if (updates.coverImage !== undefined) updateData.cover_image = updates.coverImage || null;
         if (updates.categoryId !== undefined) {
           updateData.category_id = (updates.categoryId && updates.categoryId !== 'default') ? updates.categoryId : null;
         }
+        if (updates.aiContent !== undefined) updateData.ai_content = updates.aiContent;
 
         // 确保excerpts始终被同步（使用当前状态中的数据）
         if (currentNovel) {
@@ -439,11 +464,7 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           }));
         }
 
-        console.log('☁️ [updateNovel] Syncing to Supabase:', { id, updateData });
-        console.log('📤 [updateNovel] Full updateData:', updateData);
-        console.log('📤 [updateNovel] Excerpts array:', updateData.excerpts);
-        const result = await novelQueries.update(id, updateData);
-        console.log('✅ [updateNovel] Supabase update result:', result);
+        await novelQueries.update(id, updateData);
       } catch (error: any) {
         console.error('❌ [updateNovel] Failed to update novel in Supabase:', error);
         console.error('❌ [updateNovel] Error message:', error?.message);
@@ -585,8 +606,6 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const currentNovel = novels.find(n => n.id === novelId);
     const updatedExcerpts = [...(currentNovel?.excerpts || []), excerpt];
 
-    console.log('📝 [addExcerpt] Adding excerpt:', { novelId, excerpt, updatedExcerpts });
-
     // 更新本地状态
     setNovels(prev => prev.map(novel => {
       if (novel.id === novelId) {
@@ -724,6 +743,13 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       updateExcerpt,
       deleteExcerpt,
       getExcerpts,
+      syncAISettingsToCloud: (settings) => {
+      if (user) {
+        syncAISettingsToSupabase(user.id, settings);
+      }
+      // 同时保存到 localStorage 以确保持久化
+      saveAISettings(settings);
+    },
     }}>
       {children}
     </NovelContext.Provider>

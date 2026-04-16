@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { Novel } from '../types/novel';
+import { getLatestReadingDate } from '../types/novel';
 import type { Excerpt, CreateExcerptInput } from '../types/excerpt';
 import { useNovels } from '../contexts/NovelContext';
 import ExcerptForm from './ExcerptForm';
 import ExcerptList from './ExcerptList';
-import DatePicker from './DatePicker';
+import AIBookTab from './AIBookTab';
+import ReadingHistory from './ReadingHistory';
 import './NovelDetail.css';
 
-type TabType = 'notes' | 'excerpts';
+type TabType = 'notes' | 'excerpts' | 'history' | 'ai';
 
 interface NovelDetailProps {
   novel: Novel;
@@ -44,7 +46,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
     status: novel.status,
     rating: novel.rating,
     tags: [...novel.tags],
-    readingDate: novel.readingDate || ''
+    readingSessions: [...(novel.readingSessions || [])]
   });
 
   const [newTag, setNewTag] = useState('');
@@ -118,7 +120,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
       status: novel.status,
       rating: novel.rating,
       tags: Array.from(novel.tags),
-      readingDate: novel.readingDate || ''
+      readingSessions: [...(novel.readingSessions || [])]
     });
   };
 
@@ -130,7 +132,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
       status: editedNovel.status,
       rating: editedNovel.rating,
       tags: editedNovel.tags,
-      readingDate: editedNovel.readingDate
+      readingSessions: editedNovel.readingSessions
     });
     setIsEditing(false);
   };
@@ -312,9 +314,9 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
                     )}
                   </div>
                 </div>
-                {novel.readingDate && (
+                {getLatestReadingDate(novel.readingSessions || []) && (
                   <div className="meta-row">
-                    <span className="meta-label">日期:</span>
+                    <span className="meta-label">阅读:</span>
                     <div className="novel-reading-date">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'text-bottom' }}>
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -322,7 +324,7 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                       </svg>
-                      {novel.readingDate}
+                      {getLatestReadingDate(novel.readingSessions || [])}
                     </div>
                   </div>
                 )}
@@ -428,16 +430,6 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
                     </div>
                   </div>
                 </div>
-                <div className="meta-row">
-                  <span className="meta-label">日期:</span>
-                  <DatePicker
-                    value={editedNovel.readingDate}
-                    onChange={(date) => {
-                      setEditedNovel({ ...editedNovel, readingDate: date });
-                    }}
-                    placeholder="选择阅读日期"
-                  />
-                </div>
               </div>
             )}
           </div>
@@ -463,6 +455,24 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
             </svg>
             书摘
           </button>
+          <button
+            className={`detail-tab ${activeTab === 'history' ? 'active' : ''}`}
+            onClick={() => setActiveTab('history')}
+          >
+            <svg width="18" height="18" viewBox="0 0 1024 1024" style={{ marginRight: '6px' }}>
+              <path d="M512 938.666667c235.648 0 426.666667-191.018667 426.666667-426.666667S747.648 85.333333 512 85.333333 85.333333 276.352 85.333333 512s191.018667 426.666667 426.666667 426.666667z m0 85.333333C229.248 1024 0 794.752 0 512S229.248 0 512 0s512 229.248 512 512-229.248 512-512 512z m42.666667-486.869333V298.538667C554.666667 275.328 535.552 256 512 256c-23.722667 0-42.666667 19.029333-42.666667 42.538667v256.256a41.984 41.984 0 0 0 12.202667 29.866666l121.258667 121.258667a42.368 42.368 0 0 0 60.032-0.298667 42.666667 42.666667 0 0 0 0.298666-60.032L554.666667 537.130667z" fill="currentColor" p-id="13894"></path>
+            </svg>
+            历程
+          </button>
+          <button
+            className={`detail-tab ${activeTab === 'ai' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ai')}
+          >
+            <svg width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor" style={{ marginRight: '6px' }}>
+              <path d="M468.064 165.664a45.856 45.856 0 0 1 48.512 43.68 47.36 47.36 0 0 1-11.2 33.76 45.344 45.344 0 0 1-31.296 15.872c-139.264 9.6-249.056 125.76-254.336 268.992-5.248 143.296 95.744 267.52 233.984 287.872 138.176 20.256 269.056-69.76 303.264-208.8 2.88-11.968 10.336-22.272 20.672-28.672a45.088 45.088 0 0 1 34.656-5.344c24.544 6.496 39.36 31.872 33.152 56.8-12.544 50.976-35.424 98.592-67.424 135.776l87.328 81.504c12.096 11.68 17.056 29.12 12.928 45.6-4.096 16.448-16.672 29.408-32.832 33.856a44.96 44.96 0 0 1-44.64-13.408l-83.104-81.216c-192.544 155.84-477.216 75.552-565.216-159.36C64.576 437.6 223.36 182.4 468.064 165.632v0.032z m150.784 262.784c6.08 0 10.976 4.992 10.976 11.168v189.056a11.04 11.04 0 0 1-10.976 11.168h-21.952a11.104 11.104 0 0 1-11.008-11.2v-189.024c0-6.144 4.96-11.104 10.976-11.104h22.016l-0.032-0.064z m-164.512 2.72a10.976 10.976 0 0 1 9.792 6.144l99.872 202.528h-54.816l-46.944-104.512a8.832 8.832 0 0 0-8-5.152 8.832 8.832 0 0 0-8 5.152l-46.816 104.512h-54.752l99.84-202.56a10.976 10.976 0 0 1 9.856-6.08v-0.032h-0.032zM744.576 128c6.368 0 12.032 4.064 14.016 10.144l29.44 87.424c7.008 20.8 23.136 37.152 43.616 44.32l86.176 29.824c6.08 1.984 10.176 7.712 10.176 14.176a14.88 14.88 0 0 1-10.176 14.208l-86.176 29.824a70.464 70.464 0 0 0-43.616 44.352l-29.44 87.392a14.784 14.784 0 0 1-22.624 7.36 14.784 14.784 0 0 1-5.376-7.36l-29.44-87.424a70.4 70.4 0 0 0-43.648-44.32l-86.08-29.824a14.976 14.976 0 0 1-10.016-14.208 15.008 15.008 0 0 1 9.984-14.176l86.144-29.824a70.528 70.528 0 0 0 43.68-44.32l29.344-87.456A14.816 14.816 0 0 1 744.576 128z"/>
+            </svg>
+            AI 知书
+          </button>
         </div>
 
         {/* 选项卡内容区域 */}
@@ -485,6 +495,28 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
                 onUpdate={handleEditExcerpt}
                 onAdd={handleAddExcerpt}
                 initialExcerptId={initialExcerptId}
+              />
+            </div>
+          )}
+          {activeTab === 'history' && (
+            <div className="detail-history-section">
+              <ReadingHistory
+                sessions={novel.readingSessions || []}
+                novelStatus={novel.status}
+                onUpdate={(sessions) => onUpdate(novel.id, { readingSessions: sessions })}
+              />
+            </div>
+          )}
+          {activeTab === 'ai' && (
+            <div className="detail-ai-section">
+              <AIBookTab
+                title={novel.title}
+                author={novel.author}
+                aiContent={novel.aiContent}
+                onSaveContent={(content) => onUpdate(novel.id, {
+                  aiContent: content,
+                  aiContentUpdatedAt: new Date().toISOString()
+                })}
               />
             </div>
           )}

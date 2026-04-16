@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import type { Novel, ReadingStatus } from '../types/novel';
-import { COVER_COLORS } from '../utils/generateId';
+import type { Novel, ReadingStatus, ReadingSession } from '../types/novel';
+import { COVER_COLORS, generateId } from '../utils/generateId';
 import DatePicker from './DatePicker';
 import { useNovels } from '../contexts/NovelContext';
 import './NovelForm.css';
@@ -13,7 +13,7 @@ interface NovelFormProps {
     status: ReadingStatus;
     rating: number;
     tags: string[];
-    readingDate?: string;
+    readingSessions: ReadingSession[];
     coverColor: string;
     coverImage?: string;
     categoryId?: string;
@@ -29,7 +29,7 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
   const [rating, setRating] = useState(0);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-  const [readingDate, setReadingDate] = useState('');
+  const [readingSessions, setReadingSessions] = useState<ReadingSession[]>([]);
   const [coverColor, setCoverColor] = useState('#6B7280');
   const [categoryId, setCategoryId] = useState('default');
 
@@ -40,7 +40,7 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
       setStatus(novel.status);
       setRating(novel.rating);
       setTags(novel.tags);
-      setReadingDate(novel.readingDate || '');
+      setReadingSessions(novel.readingSessions || []);
       setCoverColor(novel.coverColor);
       setCategoryId(novel.categoryId || 'default');
     }
@@ -58,11 +58,25 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
       status,
       rating,
       tags: tags.filter(t => t.trim()),
-      readingDate: readingDate.trim(),
+      readingSessions: readingSessions.filter(s => s.startDate.trim()),
       coverColor,
       coverImage: novel?.coverImage,
       categoryId
     });
+  };
+
+  const addReadingSession = () => {
+    setReadingSessions([...readingSessions, { id: generateId(), startDate: '' }]);
+  };
+
+  const removeReadingSession = (id: string) => {
+    setReadingSessions(readingSessions.filter(s => s.id !== id));
+  };
+
+  const updateReadingSession = (id: string, field: 'startDate' | 'endDate', value: string) => {
+    setReadingSessions(readingSessions.map(s =>
+      s.id === id ? { ...s, [field]: value } : s
+    ));
   };
 
   const addTag = () => {
@@ -165,23 +179,47 @@ const NovelForm: React.FC<NovelFormProps> = ({ novel, onSave, onCancel }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>阅读日期</label>
-              <DatePicker
-                value={readingDate}
-                onChange={setReadingDate}
-                placeholder="选择阅读日期"
-              />
+          <div className="form-group">
+            <label>阅读记录</label>
+            <div className="reading-sessions">
+              {readingSessions.map((session, index) => (
+                <div key={session.id} className="reading-session-row">
+                  <span className="session-label">{index + 1}.</span>
+                  <div className="session-inputs">
+                    <DatePicker
+                      value={session.startDate}
+                      onChange={(value) => updateReadingSession(session.id, 'startDate', value)}
+                      placeholder="开始日期"
+                    />
+                    <span className="session-arrow">→</span>
+                    <DatePicker
+                      value={session.endDate || ''}
+                      onChange={(value) => updateReadingSession(session.id, 'endDate', value)}
+                      placeholder="结束日期(选填)"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="remove-session-btn"
+                    onClick={() => removeReadingSession(session.id)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button type="button" className="add-session-btn" onClick={addReadingSession}>
+                + 添加阅读记录
+              </button>
             </div>
-            <div className="form-group">
-              <label>分类</label>
-              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
+          </div>
+
+          <div className="form-group">
+            <label>分类</label>
+            <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">

@@ -7,6 +7,9 @@ type NovelUpdate = Database['public']['Tables']['novels']['Update']
 type CategoryInsert = Database['public']['Tables']['categories']['Insert']
 type CategoryUpdate = Database['public']['Tables']['categories']['Update']
 
+type UserSettingsInsert = Database['public']['Tables']['user_settings']['Insert']
+type UserSettingsUpdate = Database['public']['Tables']['user_settings']['Update']
+
 // Helper function to ensure supabase is available
 const getSupabase = () => {
   if (!supabase) throw new Error('Supabase is not configured')
@@ -52,7 +55,6 @@ export const novelQueries = {
 
   // Update novel
   update: async (id: string, updates: NovelUpdate) => {
-    console.log('🔧 [Supabase] Updating novel:', { id, updates })
     const { data, error } = await getSupabase()
       .from('novels')
       .update(updates)
@@ -70,7 +72,6 @@ export const novelQueries = {
       })
       throw error
     }
-    console.log('✅ [Supabase] Update successful:', data)
     return data
   },
 
@@ -143,6 +144,37 @@ export const categoryQueries = {
       .eq('id', id)
 
     if (error) throw error
+  },
+}
+
+// User settings queries
+export const userSettingsQueries = {
+  // Get user settings
+  get: async (userId: string) => {
+    const { data, error } = await getSupabase()
+      .from('user_settings')
+      .select('*')
+      .eq('user_id', userId)
+      .single()
+
+    if (error && error.code !== 'PGRST116') throw error // PGRST116 = not found
+    return data
+  },
+
+  // Upsert user settings
+  upsert: async (userId: string, aiSettings: Record<string, unknown>) => {
+    const { data, error } = await getSupabase()
+      .from('user_settings')
+      .upsert({
+        user_id: userId,
+        ai_settings: aiSettings,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' })
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
   },
 }
 

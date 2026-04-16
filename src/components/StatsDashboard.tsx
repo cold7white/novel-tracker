@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import type { Novel } from '../types/novel';
+import { getLatestReadingDate, expandSessionToMonths } from '../types/novel';
 import type { Excerpt } from '../types/excerpt';
 import './StatsDashboard.css';
 
@@ -86,12 +87,9 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose, onView
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
-    // 按时间周期统计添加的书籍数量
+    // 按时间周期统计阅读的书籍数量（每本书的所有阅读区间都计入）
     const timeCounts = new Map<string, number>();
     const now = new Date();
-
-    // 只统计有阅读时间的书籍
-    const novelsWithReadingDate = novels.filter(novel => novel.readingDate);
 
     if (trendPeriod === 'year') {
       // 近20年
@@ -100,14 +98,15 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose, onView
         const yearKey = `${year}`;
         timeCounts.set(yearKey, 0);
       }
-      novelsWithReadingDate.forEach(novel => {
-        if (novel.readingDate) {
-          const date = new Date(novel.readingDate);
-          const yearKey = `${date.getFullYear()}`;
-          if (timeCounts.has(yearKey)) {
-            timeCounts.set(yearKey, (timeCounts.get(yearKey) || 0) + 1);
-          }
-        }
+      novels.forEach(novel => {
+        (novel.readingSessions || []).forEach(session => {
+          expandSessionToMonths(session).forEach(monthStr => {
+            const yearKey = monthStr.split('-')[0];
+            if (timeCounts.has(yearKey)) {
+              timeCounts.set(yearKey, (timeCounts.get(yearKey) || 0) + 1);
+            }
+          });
+        });
       });
     } else if (trendPeriod === 'month') {
       // 近12个月
@@ -116,14 +115,15 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose, onView
         const monthKey = `${String(date.getFullYear()).slice(2)}/${String(date.getMonth() + 1).padStart(2, '0')}`;
         timeCounts.set(monthKey, 0);
       }
-      novelsWithReadingDate.forEach(novel => {
-        if (novel.readingDate) {
-          const date = new Date(novel.readingDate);
-          const monthKey = `${String(date.getFullYear()).slice(2)}/${String(date.getMonth() + 1).padStart(2, '0')}`;
-          if (timeCounts.has(monthKey)) {
-            timeCounts.set(monthKey, (timeCounts.get(monthKey) || 0) + 1);
-          }
-        }
+      novels.forEach(novel => {
+        (novel.readingSessions || []).forEach(session => {
+          expandSessionToMonths(session).forEach(monthStr => {
+            const monthKey = `${monthStr.slice(2, 4)}/${monthStr.slice(5, 7)}`;
+            if (timeCounts.has(monthKey)) {
+              timeCounts.set(monthKey, (timeCounts.get(monthKey) || 0) + 1);
+            }
+          });
+        });
       });
     } else {
       // 近一个月，按天
@@ -132,14 +132,16 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose, onView
         const dayKey = `${date.getMonth() + 1}/${date.getDate()}`;
         timeCounts.set(dayKey, 0);
       }
-      novelsWithReadingDate.forEach(novel => {
-        if (novel.readingDate) {
-          const date = new Date(novel.readingDate);
-          const dayKey = `${date.getMonth() + 1}/${date.getDate()}`;
-          if (timeCounts.has(dayKey)) {
-            timeCounts.set(dayKey, (timeCounts.get(dayKey) || 0) + 1);
+      novels.forEach(novel => {
+        (novel.readingSessions || []).forEach(session => {
+          if (session.startDate) {
+            const date = new Date(session.startDate);
+            const dayKey = `${date.getMonth() + 1}/${date.getDate()}`;
+            if (timeCounts.has(dayKey)) {
+              timeCounts.set(dayKey, (timeCounts.get(dayKey) || 0) + 1);
+            }
           }
-        }
+        });
       });
     }
 
@@ -166,11 +168,15 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ novels, onClose, onView
     };
   }, [novels, trendPeriod]);
 
-  // 最近阅读（按阅读日期排序，取前 5 本）
+  // 最近阅读（按最近一次阅读日期排序，取前 5 本）
   const recentNovels = useMemo(() => {
     return [...novels]
-      .filter(n => n.readingDate)
-      .sort((a, b) => new Date(b.readingDate!).getTime() - new Date(a.readingDate!).getTime())
+      .filter(n => getLatestReadingDate(n.readingSessions || []))
+      .sort((a, b) => {
+        const dateA = getLatestReadingDate(a.readingSessions || [])!;
+        const dateB = getLatestReadingDate(b.readingSessions || [])!;
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      })
       .slice(0, 5);
   }, [novels]);
 

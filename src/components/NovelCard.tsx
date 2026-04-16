@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { Novel } from '../types/novel';
+import { getLatestReadingDate } from '../types/novel';
 import type { Category } from '../types/category';
-import { COVER_COLORS } from '../utils/generateId';
+import { COVER_COLORS, generateId } from '../utils/generateId';
 import DatePicker from './DatePicker';
 import './NovelCard.css';
 
@@ -46,7 +47,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
   const [editStatus, setEditStatus] = useState(novel.status);
   const [editRating, setEditRating] = useState(novel.rating);
   const [editTags, setEditTags] = useState(novel.tags);
-  const [editReadingDate, setEditReadingDate] = useState(novel.readingDate || '');
+  const [editReadingDate, setEditReadingDate] = useState(getLatestReadingDate(novel.readingSessions || []) || '');
   const [tagInput, setTagInput] = useState('');
 
   // 长按状态
@@ -71,11 +72,6 @@ const NovelCard: React.FC<NovelCardProps> = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        console.log('📷 [Cover Upload] Image size:', {
-          originalSize: file.size,
-          base64Size: base64String.length,
-          fileName: file.name
-        });
         onCoverImageUpload(novel.id, base64String);
       };
       reader.readAsDataURL(file);
@@ -197,14 +193,30 @@ const NovelCard: React.FC<NovelCardProps> = ({
 
   const handleSaveEdit = () => {
     if (editTitle.trim()) {
-      const updates = {
+      const updates: any = {
         title: editTitle.trim(),
         author: editAuthor.trim(),
         status: editStatus,
         rating: editRating,
         tags: editTags,
-        readingDate: editReadingDate.trim()
       };
+
+      // 如果修改了日期，更新阅读记录
+      if (editReadingDate.trim()) {
+        const existingSessions = [...(novel.readingSessions || [])];
+        const sortedSessions = [...existingSessions].sort(
+          (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        );
+        if (sortedSessions.length > 0) {
+          const idx = existingSessions.findIndex(s => s.id === sortedSessions[0].id);
+          if (idx !== -1) {
+            existingSessions[idx] = { ...existingSessions[idx], startDate: editReadingDate.trim() };
+          }
+          updates.readingSessions = existingSessions;
+        } else {
+          updates.readingSessions = [{ id: generateId(), startDate: editReadingDate.trim() }];
+        }
+      }
 
       if (onInlineEditSave) {
         onInlineEditSave(novel.id, updates);
@@ -214,6 +226,9 @@ const NovelCard: React.FC<NovelCardProps> = ({
     }
     setIsEditing(false);
   };
+
+  // 获取最近一次阅读日期用于显示
+  const latestReadingDate = getLatestReadingDate(novel.readingSessions || []);
 
   const addTag = () => {
     if (tagInput.trim() && !editTags.includes(tagInput.trim())) {
@@ -481,8 +496,8 @@ const NovelCard: React.FC<NovelCardProps> = ({
                     {getStatusText()}
                   </div>
                   <div className="novel-rating">{renderStars()}</div>
-                  <div className={`novel-reading-date ${novel.readingDate ? '' : 'empty'}`}>
-                    {novel.readingDate && (
+                  <div className={`novel-reading-date ${latestReadingDate ? '' : 'empty'}`}>
+                    {latestReadingDate && (
                       <>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight: '2px', verticalAlign: 'text-bottom' }}>
                           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -490,7 +505,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
                           <line x1="8" y1="2" x2="8" y2="6"></line>
                           <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
-                        {novel.readingDate}
+                        {latestReadingDate}
                       </>
                     )}
                   </div>
@@ -513,8 +528,8 @@ const NovelCard: React.FC<NovelCardProps> = ({
               <div className="card-view-content" key="card-view">
                 <div className="novel-title">{novel.title}</div>
                 <div className="novel-author">{novel.author || '未知作者'}</div>
-                <div className={`novel-reading-date ${novel.readingDate ? '' : 'empty'}`}>
-                  {novel.readingDate && (
+                <div className={`novel-reading-date ${latestReadingDate ? '' : 'empty'}`}>
+                  {latestReadingDate && (
                     <>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight: '2px', verticalAlign: 'text-bottom' }}>
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -522,7 +537,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                       </svg>
-                      {novel.readingDate}
+                      {latestReadingDate}
                     </>
                   )}
                 </div>

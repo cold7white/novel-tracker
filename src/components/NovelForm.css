@@ -34,9 +34,9 @@
 
 .modal-header h3 {
   margin: 0;
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-800);
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F2937;
 }
 
 .close-btn {
@@ -75,8 +75,10 @@
   display: block;
   margin-bottom: var(--spacing-sm);
   font-size: 14px;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-gray-700);
+  font-weight: 600;
+  color: #4B5563;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 /* 统一输入框样式 */
@@ -226,11 +228,54 @@
   margin-top: var(--spacing-lg);
   padding-top: var(--spacing-md);
   border-top: 1px solid var(--color-gray-200);
+  flex-shrink: 0;
 }
 
+/* 统一按钮样式 */
 .form-actions .btn {
-  padding: 8px 20px;
-  font-size: 14px;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  height: 38px !important;
+  min-width: auto !important;
+  max-width: none !important;
+  width: auto !important;
+  box-sizing: border-box !important;
+  border: 1px solid transparent !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+  border-radius: var(--border-radius-md) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+}
+
+/* 取消按钮样式 */
+.form-actions .btn-secondary {
+  background-color: var(--color-white) !important;
+  color: var(--color-gray-700) !important;
+  border-color: var(--color-gray-300) !important;
+}
+
+.form-actions .btn-secondary:hover {
+  background-color: var(--color-gray-50) !important;
+  border-color: var(--color-gray-400) !important;
+}
+
+/* 添加/保存按钮样式 */
+.form-actions .btn-primary {
+  background-color: var(--color-gray-800) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-gray-800) !important;
+}
+
+.form-actions .btn-primary:hover {
+  background-color: var(--color-gray-700) !important;
+  border-color: var(--color-gray-700) !important;
 }
 
 /* 移动端响应式 */
@@ -247,5 +292,142 @@
   .color-option {
     width: 32px;
     height: 32px;
+  }
+
+  /* 移动端按钮样式 */
+.form-actions .btn {
+    padding: 8px 16px !important;
+    height: 36px !important;
+    font-size: 13px !important;
+    min-width: auto !important;
+    max-width: none !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+    border: 1px solid transparent !important;
+    font-family: var(--font-family) !important;
+    font-weight: var(--font-weight-medium) !important;
+    border-radius: var(--border-radius-md) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+  }
+
+  /* 移动端取消按钮样式 */
+  .form-actions .btn-secondary {
+    background-color: var(--color-white) !important;
+    color: var(--color-gray-700) !important;
+    border-color: var(--color-gray-300) !important;
+  }
+
+  .form-actions .btn-secondary:hover {
+    background-color: var(--color-gray-50) !important;
+    border-color: var(--color-gray-400) !important;
+  }
+
+  /* 移动端添加/保存按钮样式 */
+  .form-actions .btn-primary {
+    background-color: var(--color-gray-800) !important;
+    color: var(--color-white) !important;
+    border-color: var(--color-gray-800) !important;
+  }
+
+  .form-actions .btn-primary:hover {
+    background-color: var(--color-gray-700) !important;
+    border-color: var(--color-gray-700) !important;
+  }
+}
+
+/* 阅读记录样式 */
+.reading-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reading-session-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-label {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--color-gray-500);
+  width: 20px;
+}
+
+.session-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.session-arrow {
+  flex-shrink: 0;
+  color: var(--color-gray-400);
+}
+
+.session-inputs .date-picker-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.remove-session-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.remove-session-btn:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-red-600);
+}
+
+.add-session-btn {
+  padding: 8px 12px;
+  border: 1px dashed var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background: none;
+  color: var(--color-gray-500);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.add-session-btn:hover {
+  border-color: var(--color-gray-400);
+  color: var(--color-gray-700);
+}
+
+/* 移动端响应式 - 阅读记录 */
+@media (max-width: 480px) {
+  .reading-session-row {
+    flex-wrap: wrap;
+  }
+
+  .session-inputs {
+    width: calc(100% - 48px);
+  }
+
+  .session-arrow {
+    display: none;
   }
 }

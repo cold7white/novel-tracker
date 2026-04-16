@@ -36,10 +36,9 @@
 
 .excerpt-form-header h3 {
   margin: 0;
-  font-size: 16px;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-700);
-  letter-spacing: 0.3px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F2937;
 }
 
 .excerpt-form-header .header-content {
@@ -55,18 +54,25 @@
 }
 
 .excerpt-form-header .save-btn {
-  background: #374151;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  background: #1F2937;
+  color: var(--color-white);
+  border: 1px solid #1F2937;
+  padding: 8px 20px;
+  border-radius: var(--border-radius-md);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
   transition: all 0.2s ease;
+  min-height: 34px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .excerpt-form-header .save-btn:hover {
-  background: #4b5563;
+  background: #1F2937;
+  border-color: #1F2937;
 }
 
 .excerpt-form-header .close-btn {
@@ -258,13 +264,18 @@
 }
 
 .excerpt-form .btn {
-  padding: var(--spacing-sm) var(--spacing-xl);
-  border-radius: 10px;
+  padding: 8px 20px;
+  border-radius: var(--border-radius-md);
   font-size: 14px;
-  font-weight: var(--font-weight-medium);
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
+  min-height: 34px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .excerpt-form .btn-secondary {
@@ -279,13 +290,14 @@
 }
 
 .excerpt-form .btn-primary {
-  background-color: var(--color-gray-800);
+  background-color: #1F2937;
   color: var(--color-white);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .excerpt-form .btn-primary:hover {
-  background-color: var(--color-gray-700);
+  background-color: #1F2937;
+  border-color: #1F2937;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }

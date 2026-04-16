@@ -1,0 +1,401 @@
+/* 阅读历程时间轴 */
+.reading-history {
+  padding: 0;
+}
+
+.history-timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.timeline-vertical-line {
+  position: absolute;
+  left: 12px;
+  width: 2px;
+  background-color: var(--color-gray-300);
+  z-index: 0;
+}
+
+.history-empty {
+  text-align: center;
+  color: var(--color-gray-400);
+  padding: 32px 16px;
+  font-size: var(--font-size-sm);
+}
+
+/* 时间轴节点 */
+.timeline-item {
+  display: flex;
+  position: relative;
+  padding-bottom: 8px;
+  align-items: flex-start;
+}
+
+.timeline-vertical-line {
+  position: absolute;
+  left: 12px;
+  top: 52px;
+  width: 2px;
+  background-color: var(--color-gray-300);
+  z-index: 0;
+}
+
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--color-gray-600);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  margin-top: 22px;
+}
+
+.add-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 2px dashed var(--color-gray-400);
+  border-style: dashed;
+  flex-shrink: 0;
+  margin-top: 22px;
+}
+
+/* 阅读记录项之间的竖线 */
+.timeline-record:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 38px;
+  bottom: -10px;
+  width: 2px;
+  background-color: var(--color-gray-300);
+  z-index: 1;
+}
+
+/* 添加按钮项不显示竖线 */
+.timeline-add {
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-add .timeline-marker {
+  display: none; /* 添加按钮前面不要有圆点 */
+}
+
+.timeline-add + .timeline-record:not(:last-child)::after {
+  top: 38px;
+}
+
+/* 时间轴内容 */
+.timeline-content {
+  flex: 1;
+  padding-left: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 8px;
+}
+
+.session-display {
+  cursor: pointer;
+  border-radius: var(--border-radius-md);
+  transition: background-color 0.2s ease;
+  border: 1px solid var(--color-gray-200);
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  flex: 1;
+}
+
+.session-display:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.session-display .session-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-700);
+  flex-shrink: 0;
+  min-width: 72px;
+  margin-right: 16px;
+}
+
+.session-dates {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.ongoing-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  background-color: #FEF3C7;
+  color: #D97706;
+  border-radius: var(--border-radius-full);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  margin-left: 4px;
+}
+
+/* 编辑状态 */
+.session-edit {
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-md);
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.session-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.session-edit-row .session-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-700);
+  flex-shrink: 0;
+  min-width: 72px;
+  margin-right: 16px;
+}
+
+.session-edit-row .date-picker-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px !important;
+  font-size: var(--font-size-sm) !important;
+}
+
+.session-arrow {
+  flex-shrink: 0;
+  color: var(--color-gray-400);
+}
+
+.session-edit-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.session-edit-cancel,
+.session-delete {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+  height: 28px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.session-edit-cancel {
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: none;
+}
+
+.session-edit-cancel:hover {
+  background-color: var(--color-gray-700);
+}
+
+.session-delete {
+  background-color: var(--color-white);
+  color: var(--color-gray-700);
+  border: 1px solid var(--color-gray-300);
+}
+
+.session-delete:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+  color: var(--color-gray-700);
+}
+
+/* 添加按钮 */
+.add-history-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px dashed var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background: none;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.add-history-btn:hover {
+  border-color: var(--color-gray-400);
+  color: var(--color-gray-700);
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+  .reading-history {
+    padding: 4px 0;
+  }
+
+  .timeline-item {
+    display: flex;
+    position: relative;
+    padding-bottom: 8px;
+  }
+
+  .timeline-marker {
+    width: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .timeline-dot {
+    width: 14px;
+    height: 14px;
+    margin-top: 18px;
+  }
+
+  .add-dot {
+    width: 14px;
+    height: 14px;
+    margin-top: 18px;
+  }
+
+  .add-dot + .timeline-vertical-line {
+    bottom: 8px;
+  }
+
+  .timeline-content {
+    padding-left: 4px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 6px;
+  }
+
+  .timeline-marker:not(:last-child)::after {
+    left: 8px;
+    top: 32px;
+    bottom: 16px;
+  }
+
+  .session-display {
+    padding: 10px 8px;
+    gap: 12px;
+  }
+
+  .session-display .session-label {
+    font-size: 15px;
+    min-width: 84px;
+    margin-right: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .session-dates {
+    font-size: 15px;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .add-history-btn {
+    padding: 8px 10px;
+    font-size: 15px;
+  }
+
+  .history-empty {
+    padding: 16px 8px;
+    font-size: 15px;
+  }
+
+  .session-edit {
+    padding: 0;
+  }
+
+  .session-edit-row {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .session-edit-row .session-label {
+    font-size: 15px;
+    min-width: 84px;
+    margin-right: 0;
+    flex-shrink: 0;
+  }
+
+  .session-arrow {
+    display: inline-block;
+    color: var(--color-gray-400);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .session-edit-row .date-picker-input {
+    padding: 4px 6px !important;
+    font-size: 15px !important;
+    width: 110px !important;
+    flex: none !important;
+  }
+
+  .session-edit-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 6px;
+  }
+
+  .session-edit-cancel,
+  .session-delete {
+    padding: 4px 10px;
+    font-size: 13px;
+    height: 24px;
+    min-width: 50px;
+  }
+
+  .timeline-line {
+    left: 8px;
+    top: 32px;
+  }
+}

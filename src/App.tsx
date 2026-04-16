@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import './App.css'
 import { NovelProvider, useNovels } from './contexts/NovelContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -812,11 +812,46 @@ function AppContent() {
   )
 }
 
+// 错误边界组件
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          padding: '20px',
+          textAlign: 'center',
+          color: '#666',
+          fontFamily: 'system-ui, sans-serif'
+        }}>
+          <h3>出现了一些小问题</h3>
+          <p>请刷新页面重试</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
     <AuthProvider>
       <NovelProvider>
-        <AppContent />
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
       </NovelProvider>
     </AuthProvider>
   )

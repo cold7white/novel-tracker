@@ -55,13 +55,15 @@ export type Database = {
           rating: number | null
           tags: string[]
           details: string | null
-          reading_date: string | null
+          reading_sessions: any[] | null
           cover_color: string
           cover_image: string | null
           created_at: string
           updated_at: string
           category_id: string | null
           excerpts: any[] | null
+          ai_content: string | null
+          ai_content_updated_at: string | null
         }
         Insert: {
           id?: string
@@ -72,13 +74,15 @@ export type Database = {
           rating?: number | null
           tags?: string[]
           details?: string | null
-          reading_date?: string | null
+          reading_sessions?: any[] | null
           cover_color?: string
           cover_image?: string | null
           created_at?: string
           updated_at?: string
           category_id?: string | null
           excerpts?: any[] | null
+          ai_content?: string | null
+          ai_content_updated_at?: string | null
         }
         Update: {
           id?: string
@@ -89,13 +93,15 @@ export type Database = {
           rating?: number | null
           tags?: string[]
           details?: string | null
-          reading_date?: string | null
+          reading_sessions?: any[] | null
           cover_color?: string
           cover_image?: string | null
           created_at?: string
           updated_at?: string
           category_id?: string | null
           excerpts?: any[] | null
+          ai_content?: string | null
+          ai_content_updated_at?: string | null
         }
       }
       categories: {
@@ -116,6 +122,29 @@ export type Database = {
           user_id?: string
           name?: string
           created_at?: string
+        }
+      }
+      user_settings: {
+        Row: {
+          id: string
+          user_id: string
+          ai_settings: Record<string, unknown>
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          ai_settings?: Record<string, unknown>
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          ai_settings?: Record<string, unknown>
+          created_at?: string
+          updated_at?: string
         }
       }
     }

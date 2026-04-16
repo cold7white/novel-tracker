@@ -49,15 +49,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string) => {
     if (!supabase) throw new Error('Supabase is not configured')
 
-    console.log('Attempting to sign up with email:', email)
-    console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL?.substring(0, 30) + '...')
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
-
-    console.log('Sign up response:', { data, error })
 
     if (error) {
       console.error('Sign up error details:', error)
@@ -70,14 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     if (!supabase) throw new Error('Supabase is not configured')
 
-    console.log('Attempting to sign in with email:', email)
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-
-    console.log('Sign in response:', { data, error })
 
     if (error) {
       console.error('Sign in error details:', error)
