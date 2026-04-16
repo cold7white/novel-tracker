@@ -35,7 +35,9 @@
       "Bash(ping github.com)",
       "Bash(nslookup github.com)",
       "Bash(git -C novel-tracker add .)",
-      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
+      "Bash(git pull *)",
+      "Bash(gh api *)"
     ]
   }
 }
