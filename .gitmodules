@@ -1,0 +1,3 @@
+[submodule "novel-tracker"]
+	path = novel-tracker
+	url = https://github.com/cold7white/novel-tracker.git
