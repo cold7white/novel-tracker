@@ -1,0 +1,433 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-gray-400);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-md);
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+.novel-form {
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: #4B5563;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* 统一输入框样式 */
+.novel-form input,
+.novel-form select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  font-size: 14px;
+  font-family: var(--font-family);
+  transition: border-color 0.2s ease;
+  line-height: 1.5;
+  color: var(--color-gray-800);
+  box-sizing: border-box;
+  background-color: var(--color-white);
+}
+
+.novel-form input:focus,
+.novel-form select:focus {
+  outline: none;
+  border-color: var(--color-gray-400);
+}
+
+.novel-form input::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* NovelForm 中的 DatePicker 输入框覆写 */
+.novel-form .date-picker-input {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* 状态按钮组 */
+.status-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.status-btn {
+  flex: 1;
+  padding: 7px 6px;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-white);
+  font-size: 12px;
+  font-family: var(--font-family);
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-btn:hover {
+  border-color: var(--color-gray-400);
+  background-color: var(--color-gray-50);
+}
+
+.status-btn.active {
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-800);
+  color: var(--color-white);
+}
+
+/* 表单中星星大小覆盖 */
+.rating-input {
+  padding: var(--spacing-xs) 0;
+}
+
+.rating-input .star {
+  font-size: 24px;
+  user-select: none;
+}
+
+.rating-input .star .star-icon {
+  display: block;
+}
+
+.color-options {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.color-option {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 3px solid transparent;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: var(--color-gray-800);
+  box-shadow: 0 0 0 2px var(--color-white), 0 0 0 4px var(--color-gray-800);
+}
+
+/* 标签输入 */
+.tags-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.tags-input input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tags-input input:focus {
+  border-color: var(--color-gray-400);
+}
+
+.tags-input input::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* 表单中可编辑标签大小覆盖 */
+.tags-input .editable-tag {
+  font-size: 13px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+/* 统一按钮样式 */
+.form-actions .btn {
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  height: 38px !important;
+  min-width: auto !important;
+  max-width: none !important;
+  width: auto !important;
+  box-sizing: border-box !important;
+  border: 1px solid transparent !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+  border-radius: var(--border-radius-md) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+}
+
+/* 取消按钮样式 */
+.form-actions .btn-secondary {
+  background-color: var(--color-white) !important;
+  color: var(--color-gray-700) !important;
+  border-color: var(--color-gray-300) !important;
+}
+
+.form-actions .btn-secondary:hover {
+  background-color: var(--color-gray-50) !important;
+  border-color: var(--color-gray-400) !important;
+}
+
+/* 添加/保存按钮样式 */
+.form-actions .btn-primary {
+  background-color: var(--color-gray-800) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-gray-800) !important;
+}
+
+.form-actions .btn-primary:hover {
+  background-color: var(--color-gray-700) !important;
+  border-color: var(--color-gray-700) !important;
+}
+
+/* 移动端响应式 */
+@media (max-width: 480px) {
+  .status-btn {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .color-options {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .color-option {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* 移动端按钮样式 */
+.form-actions .btn {
+    padding: 8px 16px !important;
+    height: 36px !important;
+    font-size: 13px !important;
+    min-width: auto !important;
+    max-width: none !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+    border: 1px solid transparent !important;
+    font-family: var(--font-family) !important;
+    font-weight: var(--font-weight-medium) !important;
+    border-radius: var(--border-radius-md) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+  }
+
+  /* 移动端取消按钮样式 */
+  .form-actions .btn-secondary {
+    background-color: var(--color-white) !important;
+    color: var(--color-gray-700) !important;
+    border-color: var(--color-gray-300) !important;
+  }
+
+  .form-actions .btn-secondary:hover {
+    background-color: var(--color-gray-50) !important;
+    border-color: var(--color-gray-400) !important;
+  }
+
+  /* 移动端添加/保存按钮样式 */
+  .form-actions .btn-primary {
+    background-color: var(--color-gray-800) !important;
+    color: var(--color-white) !important;
+    border-color: var(--color-gray-800) !important;
+  }
+
+  .form-actions .btn-primary:hover {
+    background-color: var(--color-gray-700) !important;
+    border-color: var(--color-gray-700) !important;
+  }
+}
+
+/* 阅读记录样式 */
+.reading-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reading-session-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-label {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--color-gray-500);
+  width: 20px;
+}
+
+.session-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.session-arrow {
+  flex-shrink: 0;
+  color: var(--color-gray-400);
+}
+
+.session-inputs .date-picker-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.remove-session-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+}
+
+.remove-session-btn:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-red-600);
+}
+
+.add-session-btn {
+  padding: 8px 12px;
+  border: 1px dashed var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  background: none;
+  color: var(--color-gray-500);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.add-session-btn:hover {
+  border-color: var(--color-gray-400);
+  color: var(--color-gray-700);
+}
+
+/* 移动端响应式 - 阅读记录 */
+@media (max-width: 480px) {
+  .reading-session-row {
+    flex-wrap: wrap;
+  }
+
+  .session-inputs {
+    width: calc(100% - 48px);
+  }
+
+  .session-arrow {
+    display: none;
+  }
+}

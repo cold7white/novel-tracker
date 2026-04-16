@@ -1,0 +1,208 @@
+.excerpts-list {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 0;
+  padding-bottom: var(--spacing-xl);
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+.excerpts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.excerpts-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-800);
+}
+
+.excerpts-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.add-excerpt-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 18px;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.add-excerpt-btn:hover {
+  background-color: var(--color-gray-700);
+}
+
+.search-excerpt-btn {
+  width: 32px;
+  height: 32px;
+  background-color: transparent;
+  color: var(--color-gray-600);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.search-excerpt-btn:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-400);
+}
+
+.excerpts-search-bar {
+  margin-bottom: var(--spacing-sm);
+}
+
+.excerpts-search-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family);
+  outline: none;
+  background-color: var(--color-white);
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.excerpts-search-input:focus {
+  border-color: var(--color-gray-400);
+}
+
+.excerpts-search-input::placeholder {
+  color: var(--color-gray-400);
+}
+
+.excerpts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.excerpts-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--color-gray-400);
+}
+
+.excerpts-empty svg {
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.5;
+}
+
+.excerpts-empty p {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-500);
+}
+
+.excerpts-empty .empty-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-400);
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+}
+
+.add-first-excerpt-btn {
+  background-color: var(--color-gray-800);
+  color: var(--color-white);
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-first-excerpt-btn:hover {
+  background-color: var(--color-gray-700);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .excerpts-list {
+    padding: var(--spacing-sm);
+  }
+
+  .excerpts-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .excerpts-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .add-excerpt-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    padding: 0;
+  }
+
+  .search-excerpt-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .search-excerpt-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .excerpts-actions {
+    gap: var(--spacing-xs);
+  }
+
+  .excerpts-search-input {
+    font-size: var(--font-size-xs);
+  }
+
+  .excerpts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-first-excerpt-btn {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .excerpts-empty p {
+    font-size: var(--font-size-sm);
+  }
+
+  .excerpts-empty .empty-hint {
+    font-size: var(--font-size-xs);
+  }
+}

@@ -1,0 +1,538 @@
+/* ═══════════════════════════════════════════════════════
+   AI 知书 Tab — 主页面
+═══════════════════════════════════════════════════════ */
+
+.ai-book-tab {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--spacing-md);
+  box-sizing: border-box;
+}
+
+/* 工具栏（只有配置按钮） */
+.ai-book-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ai-book-config-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 34px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 错误提示条 */
+.ai-book-error {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px 14px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: var(--border-radius-md);
+  color: #DC2626;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.ai-book-error span {
+  flex: 1;
+}
+
+.ai-book-retry-btn {
+  padding: 5px 14px;
+  font-size: 13px;
+  min-height: 28px;
+  flex-shrink: 0;
+}
+
+/* 加载状态 */
+.ai-book-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--color-gray-500);
+}
+
+.ai-book-loading p {
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.ai-book-loading-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.ai-book-loading-dots span {
+  width: 10px;
+  height: 10px;
+  background: #1F2937;
+  border-radius: 50%;
+  animation: ai-bounce 1.4s ease-in-out infinite;
+}
+
+.ai-book-loading-dots span:nth-child(1) { animation-delay: 0s; }
+.ai-book-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.ai-book-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes ai-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40%           { transform: scale(1);   opacity: 1;   }
+}
+
+/* 内容区域 */
+.ai-book-content {
+  flex: 1;
+  line-height: 1.8;
+  color: #1F2937;
+  font-size: var(--font-size-base);
+  overflow-y: auto;
+  padding-top: var(--spacing-xs);
+}
+
+.ai-book-content--streaming {
+  opacity: 0.9;
+}
+
+.ai-book-content strong {
+  color: var(--color-gray-900);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-book-content blockquote.ai-blockquote {
+  background: var(--color-gray-50);
+  border-left: 3px solid #1F2937;
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+}
+
+.ai-book-content blockquote.ai-blockquote p {
+  margin: var(--spacing-xs) 0;
+  line-height: 1.6;
+}
+
+.ai-book-content li {
+  margin-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-xs);
+  position: relative;
+}
+
+.ai-book-content li::before {
+  content: '•';
+  position: absolute;
+  left: calc(var(--spacing-lg) * -1);
+  color: var(--color-gray-400);
+}
+
+.ai-book-content br {
+  display: block;
+  content: '';
+  margin-bottom: var(--spacing-sm);
+}
+
+/* 空状态 */
+.ai-book-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--color-gray-400);
+  text-align: center;
+}
+
+.ai-book-empty-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-500);
+  margin: var(--spacing-md) 0 0;
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════
+   AI 配置页 — Portal 全屏弹窗
+═══════════════════════════════════════════════════════ */
+
+.ai-config-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-config-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 95%;
+  max-width: 1100px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.ai-config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 24px;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.ai-config-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.ai-config-close {
+  background: none;
+  border: none;
+  color: #6B7280;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ai-config-close:hover {
+  background: #F3F4F6;
+  color: #111827;
+}
+
+/* ── Body（左右分栏） ── */
+.ai-config-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 左侧：Config Panel */
+.ai-config-left {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  border-right: 1px solid #E5E7EB;
+  min-width: 0;
+}
+
+/* 右侧：Prompt 输入区 */
+.ai-config-right {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── 表单字段 ── */
+.ai-config-field {
+  margin-bottom: 16px;
+}
+
+.ai-config-field:last-child {
+  margin-bottom: 0;
+}
+
+.ai-config-field--sm {
+  margin-bottom: 12px;
+}
+
+/* 横向排列（label + switch） */
+.ai-config-field--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-config-field--row .ai-config-label {
+  margin-bottom: 0;
+}
+
+.ai-config-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.ai-config-select,
+.ai-config-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #1F2937;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.ai-config-select:focus,
+.ai-config-input:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.ai-config-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+/* ── 高级配置折叠 ── */
+.ai-config-advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #D1D5DB;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  margin-bottom: 0;
+}
+
+.ai-config-advanced-toggle:hover {
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+}
+
+.ai-config-advanced-panel {
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 10px;
+  background: #F9FAFB;
+}
+
+/* ── Stream 开关 ── */
+.ai-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: #D1D5DB;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.ai-switch--on {
+  background: #1F2937;
+}
+
+.ai-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
+.ai-switch--on .ai-switch-thumb {
+  transform: translateX(18px);
+}
+
+/* ── Prompt 输入区 ── */
+.ai-config-prompt-block {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ai-config-prompt-block--system {
+  flex: 1;
+  min-height: 0;
+}
+
+.ai-config-prompt-block--user {
+  flex-shrink: 0;
+}
+
+.ai-config-prompt-textarea {
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #1F2937;
+  background: #fff;
+  line-height: 1.6;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.ai-config-prompt-textarea:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.ai-config-prompt-textarea--system {
+  flex: 1;
+  resize: none;
+  width: 100%;
+  min-height: 180px;
+  height: 100%;
+}
+
+.ai-config-prompt-textarea--user {
+  resize: vertical;
+  width: 100%;
+  min-height: 72px;
+  height: 72px;
+}
+
+/* ── Footer ── */
+.ai-config-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-top: 1px solid #E5E7EB;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.ai-config-footer .cancel-edit-btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 36px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+  border: 1px solid #D1D5DB;
+  color: #374151;
+}
+
+.ai-config-footer .cancel-edit-btn:hover {
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+}
+
+.ai-config-footer .save-btn {
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 36px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #1F2937;
+  border: 1px solid #1F2937;
+  color: #fff;
+}
+
+.ai-config-footer .save-btn:hover:not(:disabled) {
+  background: #111827;
+  border-color: #111827;
+}
+
+.ai-config-footer .save-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════
+   响应式
+═══════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .ai-config-body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .ai-config-left {
+    border-right: none;
+    border-bottom: 1px solid #E5E7EB;
+    overflow-y: visible;
+  }
+
+  .ai-config-right {
+    overflow: visible;
+  }
+
+  .ai-config-prompt-textarea--system {
+    height: 240px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ai-config-modal {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .ai-config-left,
+  .ai-config-right {
+    padding: 16px;
+  }
+
+  .ai-config-footer {
+    padding: 10px 16px;
+  }
+
+  .ai-book-tab {
+    padding: var(--spacing-md);
+  }
+}

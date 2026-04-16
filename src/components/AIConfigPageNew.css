@@ -1,0 +1,361 @@
+/* AI Configuration Page - Left-Right Layout */
+.ai-config-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f5;
+}
+
+.ai-config-layout {
+  display: flex;
+  flex: 1;
+  gap: 0;
+}
+
+/* 左侧配置面板 */
+.config-panel {
+  width: 400px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.panel-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fafafa;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.panel-content {
+  padding: 20px;
+  flex: 1;
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-select,
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* 高级配置切换 */
+.advanced-toggle {
+  margin: 24px 0;
+}
+
+.toggle-btn {
+  width: 100%;
+  padding: 10px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  background: #e0e0e0;
+  border-color: #bbb;
+}
+
+/* 高级配置面板 */
+.advanced-config {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.advanced-config .form-group {
+  margin-bottom: 16px;
+}
+
+/* Range 滑块 */
+.form-range {
+  width: 100%;
+  margin-top: 8px;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+}
+
+.form-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #2196F3;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-range::-webkit-slider-thumb:hover {
+  background: #1976D2;
+}
+
+/* 复选框 */
+.form-group input[type="checkbox"] {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* 右侧内容区域 */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  position: relative;
+}
+
+/* Prompt 区域 */
+.prompt-section {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.prompt-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.prompt-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 150px;
+  transition: all 0.2s;
+}
+
+.prompt-textarea:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* 结果展示区域 */
+.result-section,
+.error-section {
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.result-section h3,
+.error-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.result-section h3 {
+  color: #4CAF50;
+}
+
+.error-section h3 {
+  color: #F44336;
+}
+
+.result-content,
+.error-content {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.result-content pre,
+.error-content pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.error-content pre {
+  color: #D32F2F;
+}
+
+/* 操作按钮区域 */
+.action-buttons {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel,
+.btn-generate {
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  min-width: 100px;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-generate {
+  background: #2196F3;
+  color: white;
+}
+
+.btn-generate:hover:not(:disabled) {
+  background: #1976D2;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.btn-generate:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ai-config-layout {
+    flex-direction: column;
+  }
+
+  .config-panel {
+    width: 100%;
+    height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .content-area {
+    height: 50vh;
+  }
+
+  .prompt-section {
+    height: calc(50vh - 100px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prompt-textarea {
+    flex: 1;
+  }
+
+  .action-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #e0e0e0;
+    background: white;
+    z-index: 100;
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .btn-cancel,
+  .btn-generate {
+    flex: 1;
+    font-size: 14px;
+  }
+}
+
+/* 加载动画 */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.is-calling .btn-generate {
+  animation: pulse 1.5s infinite;
+}

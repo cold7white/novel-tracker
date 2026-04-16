@@ -1,5 +1,22 @@
 {
   "buildCommand": "cd novel-tracker && npm ci && npm run build",
   "outputDirectory": "novel-tracker/dist",
-  "installCommand": "cd novel-tracker && npm ci"
+  "installCommand": "cd novel-tracker && npm ci",
+  "framework": "vite",
+  "version": 2,
+  "functions": {
+    "api": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "PUBLIC_URL": "."
+  },
+  "builds": [
+    {
+      "src": "novel-tracker/dist/**",
+      "use": "@vercel/static"
+    }
+  ]
 }
