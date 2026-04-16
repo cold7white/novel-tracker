@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd novel-tracker && npm ci && npm run build",
+  "outputDirectory": "novel-tracker/dist",
+  "installCommand": "cd novel-tracker && npm ci"
+}
