@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(curl -I https://wwmwcjinwrxgpvdirkbu.supabase.com)",
+      "Bash(curl -I https://supabase.com)",
+      "Bash(curl -v --connect-timeout 10 https://wwmwcjinwrxgpvdirkbu.supabase.com/auth/v1/user)",
+      "Bash(ipconfig /flushdns)",
+      "Bash(cmd.exe /c \"ipconfig /flushdns\")",
+      "Bash(nslookup wwmwcjinwrxgpvdirkbu.supabase.com 8.8.8.8)",
+      "Bash(nslookup wwmwcjinwrxgpvdirkbu.supabase.co 8.8.8.8)",
+      "Bash(curl -I https://wwmwcjinwrxgpvdirkbu.supabase.co)",
+      "Bash(ping 127.0.0.1 -n 3)",
+      "Read(//c/Users/86152/Desktop/cold vibe coding项目/**)",
+      "Bash(npm start:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npx tsc:*)",
+      "Bash(python -c ':*)",
+      "Bash(node -e ':*)",
+      "Bash(npx vite:*)",
+      "WebSearch",
+      "Bash(node test.js)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :5173)",
+      "Bash(dir \"C:\\\\Users\\\\86152\\\\Desktop\\\\cold-vibe-coding---novel-tracker\")",
+      "Read(//c/Users/86152/Desktop/**)",
+      "Read(//c/Users/86152/Desktop//**)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(ping github.com -n 1)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(ping github.com)",
+      "Bash(nslookup github.com)",
+      "Bash(git -C novel-tracker add .)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")"
+    ]
+  }
+}
