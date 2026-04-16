@@ -66,10 +66,10 @@ export type {
   PromptConfig,
   GenerationConfig,
   ConfigPreset
-} from '../types/ai-config';
+} from '@/types/ai-config';
 
 export type {
   AISettings,
   AIProvider,
   AIProviderModel
-} from '../types/ai';
+} from '@/types/ai';

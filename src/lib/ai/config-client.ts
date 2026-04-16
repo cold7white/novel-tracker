@@ -3,7 +3,7 @@ import type {
   StreamConfig,
   PromptConfig,
   AIConfig
-} from '../types/ai-config';
+} from '@/types/ai-config';
 
 // 导入默认配置
 import {

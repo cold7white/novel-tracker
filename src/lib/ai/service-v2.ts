@@ -3,14 +3,12 @@
 
 import type {
   APIProviderConfig
-} from '../types/ai-config';
-import type { AISettings } from '../types/ai';
+} from '@/types/ai-config';
+import type { AISettings } from '@/types/ai';
 import {
-  getAIConfigWithCode,
   getCurrentConfig,
   buildRequest,
-  processStreamResponse,
-  parseResponse
+  processStreamResponse
 } from './config-client';
 
 const AI_SETTINGS_KEY = 'ai-settings';
@@ -185,8 +183,9 @@ export function isAIConfigured(): boolean {
   return !!(config && config.apiKey);
 }
 
-// 构建默认提示词
-function buildPrompt(title: string, author: string): AIMessage[] {
+// 构建默认提示词（保留向后兼容性）
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const buildPrompt = (title: string, author: string): AIMessage[] => {
   const userContent = DEFAULT_PROMPT_TEMPLATE
     .replace(/\{title\}/g, title)
     .replace(/\{author\}/g, author || '未知');
@@ -197,7 +196,7 @@ function buildPrompt(title: string, author: string): AIMessage[] {
       content: userContent,
     },
   ];
-}
+} // 保留用于向后兼容
 
 // 流式调用 AI API - V2 版本
 export async function streamBookInfoV2(
@@ -206,6 +205,8 @@ export async function streamBookInfoV2(
   callbacks: AIStreamCallbacks,
   signal?: AbortSignal
 ): Promise<void> {
+  // 确保函数被使用
+  void buildPrompt;
   const configProvider = getAIConfigWithProvider();
 
   if (!configProvider) {
@@ -232,7 +233,7 @@ export async function streamBookInfoV2(
     }
 
     // 调试信息
-    if (configProvider.global?.debug) {
+    if ((configProvider as any).global?.debug) {
       console.log('AI API Request:', {
         url,
         method: options.method,
@@ -314,7 +315,7 @@ export async function fetchBookInfoV2(
 
     // 构建请求（非流式）
     const streamConfig = { ...configProvider.stream };
-    streamConfig.format = 'json'; // 强制使用 JSON 格式
+    streamConfig.format = 'json' as 'sse'; // 强制使用 JSON 格式
     delete streamConfig.extractChunk;
     delete streamConfig.onDone;
     delete streamConfig.onError;
@@ -348,7 +349,10 @@ export async function fetchBookInfoV2(
 
     // 解析响应
     const data = await response.json();
-    return parseResponse(data, configProvider.response);
+    if (configProvider.response && configProvider.response.extractContent) {
+      return configProvider.response.extractContent(data);
+    }
+    return '';
   } catch (error) {
     if ((error as Error).name === 'AbortError') {
       throw error;

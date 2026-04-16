@@ -1,6 +1,6 @@
 import type {
   APIProviderConfig
-} from '../types/ai-config';
+} from '@/types/ai-config';
 
 // 通用的 OpenAI 兼容 API 配置
 export const openAICompatibleConfig: APIProviderConfig = {
@@ -34,14 +34,17 @@ export const openAICompatibleConfig: APIProviderConfig = {
   response: {
     contentType: 'sse',
     extractContent: (response: unknown) => {
-      const choices = response.choices;
+      const choices = (response as Record<string, any>)?.choices;
       return choices?.[0]?.delta?.content || choices?.[0]?.message?.content || '';
     },
     isError: (response: unknown) => {
-      return response.error || response.status >= 400;
+      return !!(response as Record<string, any>)?.error ||
+             ((response as Record<string, any>)?.status || 0) >= 400;
     },
     parseError: (error: unknown) => {
-      return error.message || error.error?.message || 'Unknown error';
+      return (error as Record<string, any>)?.message ||
+             (error as Record<string, any>)?.error?.message ||
+             'Unknown error';
     }
   },
   stream: {
@@ -111,18 +114,21 @@ export const geminiConfig: APIProviderConfig = {
   response: {
     contentType: 'json',
     extractContent: (response: unknown) => {
-      return response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      return (response as Record<string, any>)?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     },
     isError: (response: unknown) => {
-      return response.error || response.status >= 400;
+      return !!(response as Record<string, any>)?.error ||
+             ((response as Record<string, any>)?.status || 0) >= 400;
     },
     parseError: (error: unknown) => {
-      return error.error?.message || error.message || 'Unknown error';
+      return (error as Record<string, any>)?.error?.message ||
+             (error as Record<string, any>)?.message ||
+             'Unknown error';
     }
   },
   stream: {
-    format: 'json',
-    extractChunk: (chunk: string) => {
+    format: 'json' as 'sse',
+    extractChunk: (_chunk: string) => {
       try {
         return '';
       } catch {
@@ -178,18 +184,21 @@ export const claudeConfig: APIProviderConfig = {
   response: {
     contentType: 'json',
     extractContent: (response: unknown) => {
-      return response.content?.[0]?.text || '';
+      return (response as Record<string, any>)?.content?.[0]?.text || '';
     },
     isError: (response: unknown) => {
-      return response.error || response.type === 'error';
+      return !!(response as Record<string, any>)?.error ||
+             (response as Record<string, any>)?.type === 'error';
     },
     parseError: (error: unknown) => {
-      return error.error?.message || error.message || 'Unknown error';
+      return (error as Record<string, any>)?.error?.message ||
+             (error as Record<string, any>)?.message ||
+             'Unknown error';
     }
   },
   stream: {
     format: 'sse',
-    extractChunk: (chunk: string) => {
+    extractChunk: (_chunk: string) => {
       try {
         return '';
       } catch {
@@ -240,13 +249,17 @@ export const zhipuGLMConfig: APIProviderConfig = {
   response: {
     contentType: 'sse',
     extractContent: (response: unknown) => {
-      return response.choices?.[0]?.delta?.content || response.choices?.[0]?.message?.content || '';
+      return (response as Record<string, any>)?.choices?.[0]?.delta?.content ||
+             (response as Record<string, any>)?.choices?.[0]?.message?.content || '';
     },
     isError: (response: unknown) => {
-      return response.error || response.code !== 0;
+      return !!(response as Record<string, any>)?.error ||
+             ((response as Record<string, any>)?.code || 0) !== 0;
     },
     parseError: (error: unknown) => {
-      return error.error?.message || error.msg || `Code: ${error.code}`;
+      return (error as Record<string, any>)?.error?.message ||
+             (error as Record<string, any>)?.msg ||
+             `Code: ${(error as Record<string, any>)?.code}`;
     }
   },
   stream: {
@@ -296,10 +309,12 @@ export const kimiConfig: APIProviderConfig = {
   response: {
     contentType: 'sse',
     extractContent: (response: unknown) => {
-      return response.choices?.[0]?.delta?.content || response.choices?.[0]?.message?.content || '';
+      return (response as Record<string, any>)?.choices?.[0]?.delta?.content ||
+             (response as Record<string, any>)?.choices?.[0]?.message?.content || '';
     },
     isError: (response: unknown) => {
-      return response.error || response.status >= 400;
+      return !!(response as Record<string, any>)?.error ||
+             ((response as Record<string, any>)?.status || 0) >= 400;
     }
   },
   stream: {

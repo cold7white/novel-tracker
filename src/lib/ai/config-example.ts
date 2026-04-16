@@ -37,16 +37,16 @@ const customConfig = {
         contentType: 'json',
         extractContent: (response: unknown) => {
           // 自定义响应解析逻辑
-          return response && typeof response === 'object' && 'data' in response ? (response as any).data?.content :
-                 response && typeof response === 'object' && 'result' in response ? (response as any).result?.text : '';
+          return response && typeof response === 'object' && 'data' in response ? (response as Record<string, any>).data?.content :
+                 response && typeof response === 'object' && 'result' in response ? (response as Record<string, any>).result?.text : '';
         },
         isError: (response: unknown) => {
-          return response && typeof response === 'object' && 'error' in response ? (response as any).error :
-                 response && typeof response === 'object' && 'code' in response ? (response as any).code !== 200 : false;
+          return response && typeof response === 'object' && 'error' in response ? !!(response as Record<string, any>).error :
+                 response && typeof response === 'object' && 'code' in response ? (response as Record<string, any>).code !== 200 : false;
         },
         parseError: (error: unknown) => {
-          return error && typeof error === 'object' && 'message' in error ? (error as any).message :
-                 error && typeof error === 'object' && 'code' in error ? `Error: ${(error as any).code}` : 'Unknown error';
+          return error && typeof error === 'object' && 'message' in error ? (error as Record<string, any>).message :
+                 error && typeof error === 'object' && 'code' in error ? `Error: ${(error as Record<string, any>).code}` : 'Unknown error';
         }
       },
       stream: {
@@ -129,12 +129,13 @@ const modifiedConfig = {
       response: {
         contentType: 'sse',
         extractContent: (response: unknown) => {
-          return response.choices?.[0]?.delta?.content ||
-                 response.choices?.[0]?.message?.content ||
-                 response.content || '';
+          return (response as Record<string, any>)?.choices?.[0]?.delta?.content ||
+                 (response as Record<string, any>)?.choices?.[0]?.message?.content ||
+                 (response as Record<string, any>)?.content || '';
         },
         isError: (response: unknown) => {
-          return response.error || response.status >= 400;
+          return !!(response as Record<string, any>)?.error ||
+                 ((response as Record<string, any>)?.status || 0) >= 400;
         }
       },
       // 修改流式处理
@@ -221,10 +222,11 @@ const newProviderConfig = {
       response: {
         contentType: 'json',
         extractContent: (response: unknown) => {
-          return response.text || '';
+          return (response as Record<string, any>)?.text || '';
         },
         isError: (response: unknown) => {
-          return response.error || response.message;
+          return !!(response as Record<string, any>)?.error ||
+                 !!(response as Record<string, any>)?.message;
         }
       },
       stream: {
