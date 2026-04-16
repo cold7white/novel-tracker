@@ -15,6 +15,7 @@ interface NovelCardProps {
   onViewDetail: (novel: Novel) => void;
   onInlineEditSave?: (id: string, updates: Partial<Novel>) => void;
   onCoverImageUpload?: (id: string, imageData: string) => void;
+  onCoverReset?: (id: string) => void;
   onCategoryChange?: (id: string, categoryId: string) => void;
   categories?: Category[];
   contextMenuOpen?: boolean;
@@ -32,6 +33,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
   onViewDetail,
   onInlineEditSave,
   onCoverImageUpload,
+  onCoverReset,
   onCategoryChange,
   categories = [],
   contextMenuOpen = false,
@@ -80,6 +82,15 @@ const NovelCard: React.FC<NovelCardProps> = ({
     if (event.target) {
       event.target.value = '';
     }
+  };
+
+  // 处理封面重置
+  const handleCoverReset = () => {
+    if (onCoverReset) {
+      onCoverReset(novel.id);
+    }
+    setShowColorPicker(false);
+    setShowCategoryPicker(false);
   };
 
   // 点击外部关闭菜单
@@ -175,6 +186,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
   };
 
   const handleColorChange = (color: string) => {
+    // 当选择颜色时，清除封面图片，只保留颜色背景
     onColorChange(novel.id, color);
     setShowColorPicker(false);
   };
@@ -348,6 +360,14 @@ const NovelCard: React.FC<NovelCardProps> = ({
             </svg>
             上传封面
           </div>
+          {novel.coverImage && (
+            <div className="menu-item" onClick={handleCoverReset}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              重置封面
+            </div>
+          )}
           {showColorPicker && (
             <div className="color-picker-submenu">
               <div className="color-picker-title">选择颜色</div>

@@ -160,7 +160,11 @@ function AppContent() {
 
   // 处理颜色变更
   const handleColorChange = (id: string, color: string) => {
-    updateNovel(id, { coverColor: color })
+    // 当选择颜色时，清除封面图片，只保留颜色背景
+    updateNovel(id, {
+      coverColor: color,
+      coverImage: undefined
+    })
   }
 
   // 处理封面上传
@@ -169,6 +173,15 @@ function AppContent() {
     // 同时更新 viewingNovel 状态，确保详情页显示最新封面
     if (viewingNovel && viewingNovel.id === id) {
       setViewingNovel({ ...viewingNovel, coverImage: imageData })
+    }
+  }
+
+  // 处理封面重置
+  const handleCoverReset = (id: string) => {
+    updateNovel(id, { coverImage: undefined })
+    // 同时更新 viewingNovel 状态，确保详情页显示最新封面
+    if (viewingNovel && viewingNovel.id === id) {
+      setViewingNovel({ ...viewingNovel, coverImage: undefined })
     }
   }
 
@@ -730,6 +743,7 @@ function AppContent() {
                   onViewDetail={handleViewDetail}
                   onInlineEditSave={handleInlineEditSave}
                   onCoverImageUpload={handleCoverImageUpload}
+                  onCoverReset={handleCoverReset}
                   onCategoryChange={handleCategoryChange}
                   categories={categories}
                   contextMenuOpen={contextMenuNovelId === novel.id}
