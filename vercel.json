@@ -6,7 +6,7 @@
   "framework": "vite",
   "functions": {
     "api": {
-      "includedFiles": ["**/*.ts", "**/*.js", "**/*.json"]
+      "include": ["**/*.ts", "**/*.js", "**/*.json"]
     }
   },
   "env": {
