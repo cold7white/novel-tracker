@@ -5,8 +5,8 @@
   "installCommand": "npm install",
   "framework": "vite",
   "functions": {
-    "api": {
-      "include": ["**/*.ts", "**/*.js", "**/*.json"]
+    "api/*.ts": {
+      "memory": 1024
     }
   },
   "env": {
