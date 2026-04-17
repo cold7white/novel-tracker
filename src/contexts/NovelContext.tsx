@@ -448,7 +448,9 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           updateData.reading_sessions = updates.readingSessions || [];
         }
         if (updates.coverColor !== undefined) updateData.cover_color = updates.coverColor || '#3b82f6';
-        if (updates.coverImage !== undefined) updateData.cover_image = updates.coverImage || null;
+        if (updates.coverImage !== undefined) {
+          updateData.cover_image = updates.coverImage || null;
+        }
         if (updates.categoryId !== undefined) {
           updateData.category_id = (updates.categoryId && updates.categoryId !== 'default') ? updates.categoryId : null;
         }

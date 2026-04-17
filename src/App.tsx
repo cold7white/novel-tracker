@@ -163,7 +163,7 @@ function AppContent() {
     // 当选择颜色时，清除封面图片，只保留颜色背景
     updateNovel(id, {
       coverColor: color,
-      coverImage: undefined
+      coverImage: null as any
     })
   }
 
@@ -178,10 +178,10 @@ function AppContent() {
 
   // 处理封面重置
   const handleCoverReset = (id: string) => {
-    updateNovel(id, { coverImage: undefined })
+    updateNovel(id, { coverImage: null as any })
     // 同时更新 viewingNovel 状态，确保详情页显示最新封面
     if (viewingNovel && viewingNovel.id === id) {
-      setViewingNovel({ ...viewingNovel, coverImage: undefined })
+      setViewingNovel({ ...viewingNovel, coverImage: null as any })
     }
   }
 
