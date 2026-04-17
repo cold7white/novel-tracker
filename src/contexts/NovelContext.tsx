@@ -154,7 +154,6 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
 
     syncInProgressRef.current = true;
-    lastSyncedUserRef.current = currentUserId;
     try {
       setSyncing(true);
       const [novelsData, categoriesData] = await Promise.all([
@@ -193,30 +192,26 @@ export const NovelProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         { id: 'default', name: '默认分类', createdAt: new Date() },
       ];
 
-      // 合并策略：保留本地和远程的数据，以 updated_at 较新的为准
+      // 合并策略：对于刷新页面拉取数据，优先使用远程数据
       const mergedNovels = (() => {
         const novelMap = new Map<string, Novel>();
 
-        // 先添加本地数据
-        novels.forEach(novel => novelMap.set(novel.id, novel));
+        // 刷新场景下，直接以远程数据为准
+        transformedNovels.forEach(novel => novelMap.set(novel.id, novel));
 
-        // 用远程数据更新（较新的会覆盖较旧的）
-        transformedNovels.forEach(novel => {
-          const existing = novelMap.get(novel.id);
-          if (!existing || new Date(novel.updatedAt) > new Date(existing.updatedAt)) {
-            // 如果本地有数据而远程没有，保留本地的
-            const coverImage = novel.coverImage || existing?.coverImage;
-            const details = (novel.details && novel.details !== '') ? novel.details : (existing?.details || '');
-            const excerpts = (novel.excerpts && novel.excerpts.length > 0) ? novel.excerpts : existing?.excerpts;
-            novelMap.set(novel.id, { ...novel, coverImage, details, excerpts });
+        // 只有当本地有而远程没有的数据（未同步的本地新增）才保留
+        novels.forEach(localNovel => {
+          if (!novelMap.has(localNovel.id)) {
+            // 检查标题，避免重复
+            const isDuplicate = transformedNovels.some(n => n.title.toLowerCase() === localNovel.title.toLowerCase());
+            if (!isDuplicate) {
+              novelMap.set(localNovel.id, localNovel);
+            }
           }
         });
 
         return Array.from(novelMap.values()).sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        ).filter((novel, index, self) =>
-          // 按标题去重，保留最新的
-          index === self.findIndex(n => n.title === novel.title)
         );
       })();
 
