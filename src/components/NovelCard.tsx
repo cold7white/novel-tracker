@@ -311,7 +311,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
   };
 
   const handleCoverClick = () => {
-    if (!isEditing && !isLongPressTriggered.current) {
+    if (!isEditing && !isLongPressTriggered.current && !contextMenuOpen) {
       onViewDetail(novel);
     }
   };
