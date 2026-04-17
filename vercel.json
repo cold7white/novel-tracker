@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "frameworkVersion": "8.0.4",
+  "functions": {
+    "api": {
+      "includedFiles": ["**/*.ts", "**/*.js", "**/*.json"]
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
