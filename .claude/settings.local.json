@@ -38,7 +38,11 @@
       "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
       "Bash(git pull *)",
       "Bash(gh api *)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(git rm *)",
+      "Bash(taskkill /f /im node.exe)",
+      "Bash(wmic process *)",
+      "Bash(git submodule *)"
     ]
   }
 }

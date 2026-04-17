@@ -765,8 +765,9 @@
   }
 
   .detail-tab {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
     font-size: 15px;
+    min-width: 80px;
   }
 
   .detail-tab span {
