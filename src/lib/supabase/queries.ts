@@ -155,9 +155,9 @@ export const userSettingsQueries = {
       .from('user_settings')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') throw error // PGRST116 = not found
+    if (error) throw error
     return data
   },
 
