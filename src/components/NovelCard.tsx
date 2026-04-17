@@ -52,8 +52,19 @@ const NovelCard: React.FC<NovelCardProps> = ({
   const [editReadingDate, setEditReadingDate] = useState(getLatestReadingDate(novel.readingSessions || []) || '');
   const [tagInput, setTagInput] = useState('');
 
+  // 监听 novel 属性变化，同步内部状态
+  useEffect(() => {
+    setEditTitle(novel.title);
+    setEditAuthor(novel.author);
+    setEditStatus(novel.status);
+    setEditRating(novel.rating);
+    setEditTags(novel.tags);
+    setEditReadingDate(getLatestReadingDate(novel.readingSessions || []) || '');
+  }, [novel]);
+
   // 长按状态
   const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
+  const isLongPressTriggered = useRef(false);
 
   // 文件上传引用
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -156,11 +167,13 @@ const NovelCard: React.FC<NovelCardProps> = ({
   // 长按开始
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isEditing) return;
+    isLongPressTriggered.current = false;
     const timer = setTimeout(() => {
       // 触觉反馈（如果支持）
       if (navigator.vibrate) {
         navigator.vibrate(50);
       }
+      isLongPressTriggered.current = true;
       // 显示菜单
       const touch = e.touches[0];
       onContextMenu?.(novel.id, { x: touch.clientX, y: touch.clientY });
@@ -174,6 +187,12 @@ const NovelCard: React.FC<NovelCardProps> = ({
     if (longPressTimer) {
       clearTimeout(longPressTimer);
       setLongPressTimer(null);
+    }
+    // 使用一个小延时来重置，确保 click 事件能正确读取到旧值
+    if (isLongPressTriggered.current) {
+      setTimeout(() => {
+        isLongPressTriggered.current = false;
+      }, 100);
     }
   };
 
@@ -292,7 +311,7 @@ const NovelCard: React.FC<NovelCardProps> = ({
   };
 
   const handleCoverClick = () => {
-    if (!isEditing) {
+    if (!isEditing && !isLongPressTriggered.current) {
       onViewDetail(novel);
     }
   };

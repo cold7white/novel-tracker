@@ -49,6 +49,20 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
     readingSessions: [...(novel.readingSessions || [])]
   });
 
+  // 监听 novel 属性变化，同步内部状态
+  useEffect(() => {
+    setEditedNovel({
+      title: novel.title,
+      author: novel.author,
+      status: novel.status,
+      rating: novel.rating,
+      tags: [...novel.tags],
+      readingSessions: [...(novel.readingSessions || [])]
+    });
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(novel.details);
+    setDetails(isUUID ? '' : (novel.details || ''));
+  }, [novel]);
+
   const [newTag, setNewTag] = useState('');
 
   // 书评和书摘相关状态
