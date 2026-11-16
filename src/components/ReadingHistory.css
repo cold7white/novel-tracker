@@ -351,39 +351,50 @@
     padding: 0;
   }
 
+  /* 允许换行：第一行放标签与两个日期框，第二行放操作按钮 */
   .session-edit-row {
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 8px 10px;
+    gap: 4px;
+    padding: 6px 8px;
     width: 100%;
     box-sizing: border-box;
+    align-items: center;
   }
 
   .session-edit-row .session-label {
-    font-size: 15px;
-    min-width: 84px;
+    font-size: 13px;
+    min-width: 70px;
     margin-right: 0;
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .session-arrow {
     display: inline-block;
     color: var(--color-gray-400);
-    font-size: 14px;
+    font-size: 12px;
     flex-shrink: 0;
   }
 
-  .session-edit-row .date-picker-input {
-    padding: 4px 6px !important;
-    font-size: 15px !important;
-    width: 110px !important;
-    flex: none !important;
+  /* 两个日期选择器容器等宽，保证左右两个日期框对齐 */
+  .session-edit-row .date-picker-container {
+    flex: 1 1 0;
+    min-width: 0;
   }
 
+  .session-edit-row .date-picker-input {
+    padding: 3px 4px !important;
+    font-size: 13px !important;
+    width: 100% !important;
+  }
+
+  /* 操作按钮换到第二行并右对齐，不再挤占日期框空间 */
   .session-edit-actions {
+    flex: 1 1 100%;
     width: 100%;
+    margin-left: 0;
+    margin-top: 2px;
     justify-content: flex-end;
-    margin-top: 6px;
   }
 
   .session-edit-cancel,

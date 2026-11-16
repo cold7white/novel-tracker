@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import './DatePicker.css';
 
 interface DatePickerProps {
@@ -135,9 +135,48 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = 
     });
   };
 
+  // 根据视口边界计算弹窗位置，保证不被遮挡
+  const updatePosition = () => {
+    if (!inputRef.current || !popupRef.current) return;
+
+    const rect = inputRef.current.getBoundingClientRect();
+    const popupW = popupRef.current.offsetWidth;
+    const popupH = popupRef.current.offsetHeight;
+    const viewW = window.innerWidth;
+    const viewH = window.innerHeight;
+    const gap = 4;
+    const edgeMargin = 8;
+
+    // 水平方向：默认与输入框左对齐，再限制在视口内
+    const left = Math.max(
+      edgeMargin,
+      Math.min(rect.left, viewW - popupW - edgeMargin)
+    );
+
+    // 垂直方向：优先显示在输入框下方，空间不足则显示在上方
+    const spaceBelow = viewH - rect.bottom - gap;
+    const spaceAbove = rect.top - gap;
+    let top: number;
+
+    if (popupH <= spaceBelow) {
+      top = rect.bottom + gap;
+    } else if (popupH <= spaceAbove) {
+      top = rect.top - gap - popupH;
+    } else if (spaceBelow >= spaceAbove) {
+      // 上下都无法完整显示：选择空间更大的一侧，弹窗内部可滚动
+      top = rect.bottom + gap;
+    } else {
+      top = rect.top - gap - popupH;
+    }
+
+    top = Math.max(edgeMargin, Math.min(top, viewH - popupH - edgeMargin));
+    setPickerPosition({ top, left });
+  };
+
   const handleTogglePicker = () => {
     if (!showPicker && inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
+      // 先给一个初始位置，useLayoutEffect 会在绘制前修正，避免闪烁
       setPickerPosition({
         top: rect.bottom + 4,
         left: rect.left
@@ -145,6 +184,28 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = 
     }
     setShowPicker(!showPicker);
   };
+
+  // 弹窗打开后、浏览器绘制前，根据实际尺寸和视口边界修正位置
+  useLayoutEffect(() => {
+    if (showPicker) {
+      updatePosition();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPicker, view, currentDate]);
+
+  // 视口尺寸变化或页面滚动时重新定位
+  useEffect(() => {
+    if (!showPicker) return;
+    const handleReposition = () => updatePosition();
+    // scroll 使用 capture，以捕获内部滚动容器的滚动事件
+    window.addEventListener('resize', handleReposition);
+    window.addEventListener('scroll', handleReposition, true);
+    return () => {
+      window.removeEventListener('resize', handleReposition);
+      window.removeEventListener('scroll', handleReposition, true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showPicker]);
 
   // 点击外部关闭日期选择器
   useEffect(() => {
@@ -199,7 +260,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ value, onChange, placeholder = 
                 <>{`${currentDate.getFullYear()}年 ${months[currentDate.getMonth()]}`}</>
               )}
               {view === 'months' && (
-                <>{`${currentDate.getFullYear()}年`}</>
+                <>{currentDate.getFullYear()}年</>
               )}
               {view === 'years' && (
                 <>选择年份</>

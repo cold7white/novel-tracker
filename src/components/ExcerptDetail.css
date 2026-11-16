@@ -273,17 +273,20 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  /* 弹窗居中显示并四周留白，不再强制全屏，保证底部按钮始终可见 */
   .excerpt-detail-overlay {
-    padding: 0;
+    padding: 12px;
   }
 
   .excerpt-detail-content {
     max-width: 100%;
-    height: 100vh;
-    border-radius: 0;
-    position: relative;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    height: auto;
+    /* 先写 vh 兜底，再用 dvh 适配移动浏览器动态地址栏 */
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: 12px;
+    overflow: hidden;
   }
 
   .excerpt-detail-header {
@@ -292,23 +295,42 @@
 
   .excerpt-detail-body {
     padding: 10px 12px;
-    gap: 8px;
+    gap: 10px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
+  /* 元信息一行放不下时自动换行，避免输入框被挤压溢出 */
   .excerpt-detail-body .meta-row {
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* 章节、页码较窄，日期项更宽以完整显示 YYYY-MM-DD */
+  .excerpt-detail-body .meta-item:nth-child(1) {
+    flex: 1 1 26%;
+    min-width: 72px;
+  }
+  .excerpt-detail-body .meta-item:nth-child(2) {
+    flex: 0.9 1 22%;
+    min-width: 64px;
+  }
+  .excerpt-detail-body .meta-item:nth-child(3) {
+    flex: 1.5 1 34%;
+    min-width: 118px;
   }
 
   .excerpt-detail-body .content-textarea,
   .excerpt-detail-body .note-textarea {
     font-size: var(--font-size-sm) !important;
     padding: 8px !important;
+    /* 保证两个文本框有可用高度，不被压到极小 */
+    min-height: 120px;
   }
 
   .excerpt-detail-content .action-buttons {
     padding: 8px 12px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   }
 
   .excerpt-detail-content .action-btn {

@@ -261,6 +261,20 @@
   font-size: 18px;
 }
 
+/* 编辑区顶部操作行：取消/保存固定在同一行，不被挤到下一行 */
+.edit-actions-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  flex-wrap: nowrap;
+  margin-bottom: var(--spacing-sm);
+}
+
+.edit-actions-row .edit-actions-desktop,
+.edit-actions-row .edit-actions-mobile {
+  margin-left: auto;
+}
+
 /* 桌面端编辑按钮 */
 .edit-actions-desktop {
   display: flex;

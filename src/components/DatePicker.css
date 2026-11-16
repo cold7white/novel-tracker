@@ -29,6 +29,11 @@
   box-shadow: var(--shadow-lg);
   z-index: 2500;
   min-width: 280px;
+  /* 限制在视口范围内，窄屏与小高度屏幕均不被遮挡 */
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  display: flex;
+  flex-direction: column;
 }
 
 .date-picker-header {
@@ -79,6 +84,11 @@
 
 .date-picker-body {
   padding: var(--spacing-xs) var(--spacing-sm);
+  /* 弹窗高度受限时，主体区域内部滚动，头部保持固定 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+  flex: 1;
 }
 
 .date-picker-weekdays {

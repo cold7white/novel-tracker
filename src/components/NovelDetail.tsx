@@ -346,6 +346,16 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
             )}
             {isEditing && (
               <div>
+                <div className="edit-actions-row">
+                  <div className="edit-actions-desktop">
+                    <button className="cancel-edit-btn" onClick={handleCancelEdit}>取消</button>
+                    <button className="save-edit-btn" onClick={handleSaveEdit}>保存</button>
+                  </div>
+                  <div className="edit-actions-mobile">
+                    <button className="cancel-edit-btn" onClick={handleCancelEdit}>取消</button>
+                    <button className="save-edit-btn" onClick={handleSaveEdit}>保存</button>
+                  </div>
+                </div>
                 <div className="meta-row">
                   <span className="meta-label">标题:</span>
                   <input
@@ -357,14 +367,6 @@ const NovelDetail: React.FC<NovelDetailProps> = ({ novel, onUpdate, onBack, init
                     }}
                     className="detail-edit-input"
                   />
-                  <div className="edit-actions-desktop">
-                    <button className="cancel-edit-btn" onClick={handleCancelEdit}>取消</button>
-                    <button className="save-edit-btn" onClick={handleSaveEdit}>保存</button>
-                  </div>
-                  <div className="edit-actions-mobile">
-                    <button className="cancel-edit-btn" onClick={handleCancelEdit}>取消</button>
-                    <button className="save-edit-btn" onClick={handleSaveEdit}>保存</button>
-                  </div>
                 </div>
                 <div className="meta-row">
                   <span className="meta-label">作者:</span>

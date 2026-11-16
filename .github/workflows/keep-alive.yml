@@ -1,0 +1,45 @@
+# Supabase 免费版项目连续 7 天无 API 活动会被自动暂停。
+# 此 workflow 每 2 天主动请求一次健康检查端点，保持项目处于活跃状态。
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # 每 2 天运行一次（UTC 16:23，约北京时间次日 00:23）
+    # 使用非整点分钟，避开 GitHub Actions 调度高峰
+    - cron: '23 16 */2 * *'
+  # 支持在 Actions 页面手动触发
+  workflow_dispatch:
+
+# 同一时刻只允许一个保活任务，避免重复运行
+concurrency:
+  group: keep-supabase-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Ping services
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping Supabase auth health endpoint
+        run: |
+          STATUS=$(curl -sS -o /tmp/health.json -w "%{http_code}" \
+            "https://wwmwcjinwrxgpvdirkbu.supabase.co/auth/v1/health")
+          echo "Supabase health HTTP status: $STATUS"
+          echo "Response body:"
+          cat /tmp/health.json
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Supabase health check failed with status $STATUS"
+            exit 1
+          fi
+
+      - name: Ping deployed Vercel site
+        run: |
+          STATUS=$(curl -sS -o /dev/null -w "%{http_code}" \
+            "https://novel-tracker-khaki.vercel.app/")
+          echo "Vercel site HTTP status: $STATUS"
+          # 站点只要能响应即可，不因为非 200（如重定向）让任务失败
+          if [ "$STATUS" = "000" ]; then
+            echo "::error::Vercel site is unreachable"
+            exit 1
+          fi
