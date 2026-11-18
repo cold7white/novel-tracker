@@ -1,5 +1,9 @@
 # Supabase 免费版项目连续 7 天无 API 活动会被自动暂停。
 # 此 workflow 每 2 天主动请求一次健康检查端点，保持项目处于活跃状态。
+#
+# 注意：Supabase 的 /auth/v1/health 端点必须携带 apikey 请求头，
+# 否则会返回 401（No API key found），被误判为失败。
+# apikey 从仓库 Secret: SUPABASE_ANON_KEY 读取，不要硬编码在文件里。
 name: Keep Supabase Alive
 
 on:
@@ -22,8 +26,15 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Ping Supabase auth health endpoint
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::缺少 Secret: SUPABASE_ANON_KEY，请在仓库 Settings > Secrets and variables > Actions 中添加"
+            exit 1
+          fi
           STATUS=$(curl -sS -o /tmp/health.json -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
             "https://wwmwcjinwrxgpvdirkbu.supabase.co/auth/v1/health")
           echo "Supabase health HTTP status: $STATUS"
           echo "Response body:"
